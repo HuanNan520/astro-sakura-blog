@@ -1,0 +1,48 @@
+---
+interface Props {
+  seriesName: string;
+  seriesOrder: number;
+  totalPosts: number;
+  prevPost?: { id: string; data: { title: string } };
+  nextPost?: { id: string; data: { title: string } };
+  guidePost?: { id: string };
+}
+
+const { seriesName, seriesOrder, totalPosts, prevPost, nextPost, guidePost } = Astro.props;
+const articleCount = totalPosts - 1; // 排除导航页
+---
+
+{seriesOrder === 0 ? (
+  <!-- 导航页：系列概览 -->
+  <div class="mt-6 bg-primary/10 dark:bg-primary-light/10 border-l-3 border-primary dark:border-primary-light rounded-xl px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+    <span class="text-sm text-primary dark:text-primary-light font-headline">
+      📚 {seriesName} — {articleCount} 篇深度文章
+    </span>
+    <a href="#series-articles" class="text-sm font-medium text-white bg-primary dark:bg-primary-light dark:text-gray-900 px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity">
+      开始阅读 →
+    </a>
+  </div>
+) : (
+  <!-- 子文章：系列导航 -->
+  <div class="mt-6 bg-primary/10 dark:bg-primary-light/10 border-l-3 border-primary dark:border-primary-light rounded-xl px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+    <div class="flex items-center gap-2 flex-wrap">
+      <span class="text-sm text-primary dark:text-primary-light font-headline">
+        📖 {seriesName} · 第 {seriesOrder} / {articleCount} 篇
+      </span>
+      {guidePost && (
+        <a href={`/blog/${guidePost.id}/`} class="text-sm text-primary/70 dark:text-primary-light/70 hover:text-primary dark:hover:text-primary-light transition-colors">
+          回到导航 →
+        </a>
+      )}
+    </div>
+    <div class="flex items-center gap-3 text-sm">
+      {prevPost ? (
+        <a href={`/blog/${prevPost.id}/`} class="text-muted dark:text-gray-400 hover:text-primary dark:hover:text-primary-light hover:underline transition-colors">← 上一篇</a>
+      ) : <span class="text-muted/30 dark:text-gray-600">← 上一篇</span>}
+      <span class="text-muted/30">|</span>
+      {nextPost ? (
+        <a href={`/blog/${nextPost.id}/`} class="text-muted dark:text-gray-400 hover:text-primary dark:hover:text-primary-light hover:underline transition-colors">下一篇 →</a>
+      ) : <span class="text-muted/30 dark:text-gray-600">下一篇 →</span>}
+    </div>
+  </div>
+)}

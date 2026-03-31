@@ -1,0 +1,51 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog')).filter(p => !p.data.hidden).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+// 按年月分组
+const grouped: Record<string, typeof posts> = {};
+for (const post of posts) {
+  const d = post.data.date;
+  const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  if (!grouped[key]) grouped[key] = [];
+  grouped[key].push(post);
+}
+
+const sortedKeys = Object.keys(grouped).sort((a, b) => b.localeCompare(a));
+---
+<Base title="归档" description="Browse all posts by date">
+  <section class="max-w-3xl mx-auto px-6 md:px-8 py-20">
+    <h1 class="text-3xl md:text-4xl font-headline text-gray-800 dark:text-gray-100 mb-2">归档</h1>
+    <p class="text-muted dark:text-gray-400 mb-12">共 {posts.length} 篇文章</p>
+
+    <div class="flex flex-col gap-10">
+      {sortedKeys.map(key => {
+        const [year, month] = key.split('-');
+        return (
+          <div>
+            <h2 class="text-xl font-headline text-primary dark:text-primary-light mb-4">
+              {year} 年 {parseInt(month)} 月
+            </h2>
+            <div class="flex flex-col gap-3 pl-4 border-l-2 border-primary-light/30 dark:border-primary/30">
+              {grouped[key].map(post => (
+                <a
+                  href={`/blog/${post.id}`}
+                  class="group flex items-baseline gap-4 py-1 hover:text-primary dark:hover:text-primary-light transition-colors duration-300"
+                >
+                  <span class="text-sm text-muted dark:text-gray-500 flex-shrink-0 w-20">
+                    {post.data.date.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' })}
+                  </span>
+                  <span class="text-gray-800 dark:text-gray-200 group-hover:text-primary dark:group-hover:text-primary-light transition-colors duration-300">
+                    {post.data.title}
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </section>
+</Base>

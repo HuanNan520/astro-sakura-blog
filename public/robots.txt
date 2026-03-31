@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://huannan.top/sitemap-index.xml

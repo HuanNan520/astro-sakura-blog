@@ -1,0 +1,182 @@
+---
+import { siteConfig } from '../config';
+
+interface Props {
+  path?: string;
+}
+const { path } = Astro.props;
+const serverURL = siteConfig.comments.serverURL;
+const emojiConfig = siteConfig.comments.emoji || ['/emojis/bilibili', '/emojis/tieba'];
+---
+
+{serverURL && (
+<!-- Comment Section -->
+<div class="waline-wrap mt-12 pt-8 border-t border-border/30 dark:border-gray-700">
+  <div class="flex items-center gap-3 mb-6">
+    <span class="text-2xl">💬</span>
+    <h3 class="font-headline text-lg text-gray-800 dark:text-gray-100">Comments</h3>
+  </div>
+  <div id="waline-comment" data-path={path} data-server-url={serverURL}></div>
+</div>
+
+<!-- Waline client (local install, no external CDN) -->
+<script>
+import { init } from '@waline/client';
+import '@waline/client/waline.css';
+
+function initWaline() {
+  const container = document.getElementById('waline-comment');
+  if (!container || container.dataset.loaded) return;
+
+  /* Lazy load: only init when scrolled near the comment area */
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        observer.disconnect();
+        loadWaline(container);
+      }
+    }, { rootMargin: '200px' });
+    observer.observe(container);
+    return;
+  }
+  loadWaline(container);
+}
+
+function loadWaline(container: HTMLElement) {
+  if (container.dataset.loaded) return;
+  container.dataset.loaded = '1';
+
+  const path = container.dataset.path || window.location.pathname;
+  const serverURL = container.dataset.serverUrl || '';
+  if (!serverURL) return;
+
+  init({
+    el: '#waline-comment',
+    serverURL: serverURL,
+    path: path,
+    dark: 'html.dark',
+    lang: 'en',
+    meta: ['nick', 'mail'],
+    requiredMeta: ['nick'],
+    login: 'disable',
+    wordLimit: 500,
+    pageSize: 10,
+    pageview: true,
+    comment: true,
+    imageUploader: false,
+    locale: {
+      placeholder: 'Leave a comment... (Markdown supported)',
+      sofa: 'Be the first to comment!',
+      anonymous: 'Anonymous',
+      submit: 'Submit',
+      reply: 'Reply',
+      cancelReply: 'Cancel reply',
+      more: 'Load more',
+      level0: 'Newcomer',
+      level1: 'Beginner',
+      level2: 'Regular',
+      level3: 'Veteran',
+      level4: 'Expert',
+      level5: 'Legend',
+    },
+    emoji: [
+      '/emojis/bilibili',
+      '/emojis/tieba',
+    ],
+    search: false,
+  });
+}
+
+initWaline();
+document.addEventListener('astro:page-load', initWaline);
+</script>
+
+<!-- Styling overrides -->
+<style is:global>
+  #waline-comment {
+    --waline-theme-color: #d946a8;
+    --waline-active-color: #e879a8;
+    --waline-bg-color: transparent;
+    --waline-bg-color-light: rgba(217, 70, 168, 0.04);
+    --waline-bg-color-hover: rgba(217, 70, 168, 0.06);
+    --waline-border-color: rgba(0, 0, 0, 0.06);
+    --waline-disable-bg-color: #f5f5f5;
+    --waline-font-size: 14px;
+    --waline-border: 1px solid var(--waline-border-color);
+    --waline-avatar-size: 44px;
+    --waline-m-avatar-size: 36px;
+    --waline-badge-color: #d946a8;
+    --waline-info-bg-color: rgba(217, 70, 168, 0.06);
+    --waline-info-color: #d946a8;
+  }
+  .dark #waline-comment {
+    --waline-theme-color: #a0d8ef;
+    --waline-active-color: #7ec8e3;
+    --waline-bg-color: transparent;
+    --waline-bg-color-light: rgba(160, 216, 239, 0.06);
+    --waline-bg-color-hover: rgba(160, 216, 239, 0.08);
+    --waline-border-color: rgba(255, 255, 255, 0.08);
+    --waline-disable-bg-color: #1a1a2e;
+    --waline-color: #e5e7eb;
+    --waline-badge-color: #a0d8ef;
+    --waline-info-bg-color: rgba(160, 216, 239, 0.08);
+    --waline-info-color: #a0d8ef;
+  }
+  .wl-comment .wl-editor {
+    background: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 16px !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    padding: 14px !important;
+  }
+  .dark .wl-comment .wl-editor {
+    background: rgba(15, 14, 23, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+  .wl-comment .wl-input { border-radius: 10px !important; }
+  .wl-comment .wl-btn {
+    border-radius: 20px !important;
+    padding: 6px 20px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+  }
+  .wl-comment .wl-btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 16px rgba(217, 70, 168, 0.25);
+  }
+  .dark .wl-comment .wl-btn:hover {
+    box-shadow: 0 4px 16px rgba(160, 216, 239, 0.25);
+  }
+  .wl-cards .wl-card {
+    border-radius: 16px !important;
+    padding: 16px !important;
+    margin-bottom: 12px !important;
+    background: rgba(255, 255, 255, 0.5) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 0, 0, 0.04) !important;
+    transition: all 0.3s ease !important;
+  }
+  .wl-cards .wl-card:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    transform: translateY(-1px);
+  }
+  .dark .wl-cards .wl-card {
+    background: rgba(15, 14, 23, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  }
+  .wl-card .wl-user img {
+    border-radius: 50% !important;
+    border: 2px solid rgba(217, 70, 168, 0.2) !important;
+  }
+  .dark .wl-card .wl-user img {
+    border: 2px solid rgba(160, 216, 239, 0.2) !important;
+  }
+  .wl-badge { border-radius: 10px !important; font-size: 10px !important; padding: 1px 8px !important; }
+  .wl-action[title="Markdown Guide"] { display: none !important; }
+  .wl-gallery { max-height: 300px !important; overflow-y: auto !important; }
+  .wl-search-wrap { max-height: 360px !important; overflow-y: auto !important; }
+  .waline-pageview-count { font-variant-numeric: tabular-nums; }
+</style>
+)}

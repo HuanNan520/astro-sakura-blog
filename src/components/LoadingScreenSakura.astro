@@ -1,0 +1,182 @@
+---
+/* ── Sakura Logo Loading Screen ── */
+import { siteConfig } from '../config';
+---
+
+<!-- Loading Screen: 首次访问时显示 -->
+<div id="loading-screen" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-surface dark:bg-surface-dark">
+  <!-- 樱花 Logo -->
+  <div class="sakura-logo">
+    <svg
+      viewBox="0 0 32 32"
+      width="72"
+      height="72"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+    >
+      <defs>
+        <linearGradient id="sakura-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#FFB7C5" />
+          <stop offset="50%" stop-color="#FF8FA3" />
+          <stop offset="100%" stop-color="#E75480" />
+        </linearGradient>
+        <!-- 光晕滤镜 -->
+        <filter id="sakura-glow">
+          <feGaussianBlur stdDeviation="2" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      <g transform="translate(16,16)" filter="url(#sakura-glow)">
+        <g fill="url(#sakura-grad)" opacity="0.85">
+          <ellipse cx="0" cy="-8" rx="3.5" ry="7" transform="rotate(0)" />
+          <ellipse cx="0" cy="-8" rx="3.5" ry="7" transform="rotate(72)" />
+          <ellipse cx="0" cy="-8" rx="3.5" ry="7" transform="rotate(144)" />
+          <ellipse cx="0" cy="-8" rx="3.5" ry="7" transform="rotate(216)" />
+          <ellipse cx="0" cy="-8" rx="3.5" ry="7" transform="rotate(288)" />
+        </g>
+        <circle cx="0" cy="0" r="3" fill="url(#sakura-grad)" opacity="0.4" />
+      </g>
+    </svg>
+    <!-- 脉冲光晕 -->
+    <div class="sakura-pulse"></div>
+  </div>
+
+  <!-- 进度条 -->
+  <div class="sakura-bar">
+    <div class="sakura-bar-fill"></div>
+  </div>
+
+  <!-- 文字 -->
+  <p class="sakura-title font-headline">{siteConfig.loadingScreen.text}</p>
+</div>
+
+<style is:global>
+  /* ── 樱花容器 ── */
+  .sakura-logo {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: sakura-spin 4s linear infinite, sakura-breathe 2.5s ease-in-out infinite;
+  }
+
+  /* 旋转 */
+  @keyframes sakura-spin {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* 缩放呼吸 */
+  @keyframes sakura-breathe {
+    0%, 100% { scale: 1; }
+    50%      { scale: 1.08; }
+  }
+
+  /* 脉冲光晕 */
+  .sakura-pulse {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 90px;
+    height: 90px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 183, 197, 0.35) 0%, transparent 70%);
+    animation: sakura-pulse-anim 2.5s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes sakura-pulse-anim {
+    0%, 100% { opacity: 0.4; scale: 0.9; }
+    50%      { opacity: 0.8; scale: 1.3; }
+  }
+
+  .dark .sakura-pulse {
+    background: radial-gradient(circle, rgba(255, 183, 197, 0.18) 0%, transparent 70%);
+  }
+
+  /* ── 进度条 ── */
+  .sakura-bar {
+    width: 120px;
+    height: 2px;
+    background: rgba(255, 143, 163, 0.12);
+    border-radius: 99px;
+    margin-top: 32px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .dark .sakura-bar {
+    background: rgba(255, 183, 197, 0.1);
+  }
+
+  .sakura-bar-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(90deg, #FFB7C5, #FF8FA3, #E75480);
+    border-radius: 99px;
+    animation: sakura-bar-slide 1.6s ease-in-out infinite;
+  }
+
+  @keyframes sakura-bar-slide {
+    0%   { left: -40%; }
+    100% { left: 100%; }
+  }
+
+  /* ── 文字 ── */
+  .sakura-title {
+    margin-top: 18px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, #FFB7C5, #FF8FA3, #E75480);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0;
+    animation: sakura-text-in 0.8s ease 0.3s forwards;
+  }
+
+  @keyframes sakura-text-in {
+    0%   { opacity: 0; transform: translateY(6px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── 淡出 ── */
+  #loading-screen {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  #loading-screen.loaded {
+    opacity: 0;
+    transform: scale(1.2);
+    pointer-events: none;
+  }
+</style>
+
+<script is:inline>
+(function() {
+  var el = document.getElementById('loading-screen');
+  if (!el) return;
+
+  /* 仅首次访问展示 */
+  if (sessionStorage.getItem('sakura-loaded')) {
+    el.style.display = 'none';
+    return;
+  }
+
+  window.addEventListener('load', function() {
+    sessionStorage.setItem('sakura-loaded', '1');
+    setTimeout(function() {
+      el.classList.add('loaded');
+      setTimeout(function() { el.style.display = 'none'; }, 550);
+    }, 600);
+  });
+})();
+</script>

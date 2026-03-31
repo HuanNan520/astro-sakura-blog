@@ -1,0 +1,49 @@
+---
+title: "Feature Showcase"
+summary: "Explore the built-in features of this blog template — music player, dark mode, series navigation, and more."
+date: 2026-01-03
+tags: ["Features", "Demo"]
+series: "Getting Started"
+seriesOrder: 1
+---
+
+This post is part of the **Getting Started** series. Notice the series navigation at the top of the page.
+
+## Music Player
+
+The built-in music player supports:
+- Playlist with shuffle/sequential modes
+- Bilingual lyrics with auto-scroll
+- Apple Music-style blurred cover background
+- Keyboard media key control (play/pause/next/prev)
+- Draggable position
+- Per-article BGM override via frontmatter
+
+Add songs in `src/data/playlist.ts`.
+
+## Dark Mode
+
+The theme automatically switches to dark mode after 18:00 and back to light mode at 06:00. Users can also toggle manually with the sun/moon button in the header.
+
+## Search
+
+Press the search icon to open full-text search. It indexes all post titles, summaries, and tags.
+
+## Series Navigation
+
+Add `series` and `seriesOrder` to your post frontmatter to group posts into a series. The template automatically generates previous/next navigation.
+
+## Per-Article BGM
+
+Add `bgm: "Song Name"` to your frontmatter to auto-switch the music player when readers open your post.
+
+## Comments
+
+Enable [Waline](https://waline.js.org) comments by setting `serverURL` in `src/config.ts`.
+
+## Deployment
+
+This template works great with:
+- **Cloudflare Pages** — Free, fast, global CDN
+- **Vercel** — Zero-config deployment
+- **Netlify** — Simple and reliable
