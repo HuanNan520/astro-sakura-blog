@@ -1,5 +1,9 @@
 # Astro Sakura Blog
 
+[![Astro](https://img.shields.io/badge/Astro-6-ff5d01?logo=astro&logoColor=white)](https://astro.build)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 一款精美的 Astro 6 博客模板，樱花主题设计，内置自研音乐播放器。
 
 [**在线演示**](https://huannan.top) | [**English**](README.md)
