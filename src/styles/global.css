@@ -1,0 +1,564 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============ 自托管字体：Manrope (latin) ============ */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('/fonts/manrope-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/manrope-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/manrope-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('/fonts/manrope-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* Noto Serif SC 已自托管（见 noto-serif-sc.css），在 Base.astro 中 import 加载 */
+
+/* ============ 全局基础样式 ============ */
+html { scroll-behavior: smooth; scroll-padding-top: 100px; }
+body {
+  font-size: 16px;
+  transition: background-color 0.3s, color 0.3s;
+  background-image: radial-gradient(circle, rgba(43, 101, 121, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+.dark body {
+  background-image: radial-gradient(circle, rgba(160, 216, 239, 0.02) 1px, transparent 1px);
+}
+::selection { background: #a0d8ef; color: #2b6579; }
+
+/* 交互元素过渡（不再对 * 全局应用，避免性能问题） */
+a, button, input, [role="button"] {
+  transition-property: background-color, border-color, color, opacity;
+  transition-duration: 0.2s;
+}
+
+/* ============ 毛玻璃效果 ============ */
+.glass {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(24px) saturate(1.6);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+}
+.dark .glass {
+  background: rgba(15, 14, 23, 0.65);
+}
+
+/* ============ 全局卡片边框与阴影 ============ */
+.bg-white,
+.dark .dark\:bg-card-dark {
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+}
+.bg-white:hover,
+.dark .dark\:bg-card-dark:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.04);
+}
+.dark .bg-white {
+  border-color: rgba(160, 216, 239, 0.06);
+}
+
+/* ============ 链接 hover 过渡 ============ */
+a {
+  transition: color 0.25s ease, opacity 0.25s ease;
+  text-underline-offset: 3px;
+}
+
+/* ============ 图片全局圆角与占位背景 ============ */
+img {
+  border-radius: 14px;
+  background: #f0f0f0;
+}
+.dark img {
+  background: #1a1a2e;
+}
+/* 在卡片等容器内保持填充 */
+.overflow-hidden img,
+.rounded-full img {
+  border-radius: inherit;
+}
+
+/* ============ 自定义滚动条 ============ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(43, 101, 121, 0.25);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(43, 101, 121, 0.45);
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(160, 216, 239, 0.2);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(160, 216, 239, 0.4);
+}
+/* Firefox 滚动条 */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(43, 101, 121, 0.25) transparent;
+}
+.dark {
+  scrollbar-color: rgba(160, 216, 239, 0.2) transparent;
+}
+
+/* ============ 竖排文字 ============ */
+.vertical-text { writing-mode: vertical-rl; }
+
+/* ============ 文章内容样式 (prose) ============ */
+.prose h1 { font-size: 2rem; font-weight: 700; margin: 2rem 0 1rem; }
+.prose h2 { font-size: 1.5rem; font-weight: 600; margin: 2.5rem 0 1rem; color: #2b6579; border-left: 3px solid #a0d8ef; padding-left: 0.8rem; }
+.prose h3 { font-size: 1.25rem; font-weight: 600; margin: 2rem 0 0.8rem; }
+.prose h3::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #a0d8ef;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+.prose p { margin: 1.2rem 0; line-height: 1.8; }
+.prose img { max-width: 100%; border-radius: 1rem; margin: 1.5rem 0; }
+.prose a { color: #2b6579; text-decoration: underline; transition: color 0.25s ease; }
+.prose a:hover { color: #1d4a59; }
+.prose blockquote {
+  border-left: 4px solid #a0d8ef;
+  padding: 0.5rem 1rem;
+  margin: 1rem 0;
+  background: #f3f4f5;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+.prose code {
+  background: #f3f4f5;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.9em;
+}
+.prose pre {
+  background: #1a1a2e;
+  color: #e0e0e0;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+.prose pre code { background: none; padding: 0; }
+.prose pre { position: relative; }
+.prose pre .code-copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: #9ca3af;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.prose pre:hover .code-copy-btn { opacity: 1; }
+.prose pre .code-copy-btn:hover { background: rgba(255,255,255,0.2); color: #e5e7eb; }
+.prose pre .code-copy-btn.copied { color: #4ade80; }
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.9em;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+.prose thead { background: #f8f9fa; }
+.prose th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #e5e7eb;
+  white-space: nowrap;
+}
+.prose td {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  line-height: 1.6;
+}
+.prose tbody tr:last-child td { border-bottom: none; }
+.prose tbody tr:hover { background: rgba(160, 216, 239, 0.06); }
+.dark .prose table { border-color: rgba(255,255,255,0.1); }
+.dark .prose thead { background: rgba(255,255,255,0.05); }
+.dark .prose th { border-bottom-color: rgba(255,255,255,0.1); }
+.dark .prose td { border-bottom-color: rgba(255,255,255,0.05); }
+.dark .prose tbody tr:hover { background: rgba(160, 216, 239, 0.04); }
+.prose ul, .prose ol { padding-left: 1.5rem; margin: 1rem 0; }
+.prose li { margin: 0.3rem 0; line-height: 1.8; }
+
+/* 暗色模式文章样式 */
+.dark .prose blockquote { background: rgba(160, 216, 239, 0.08); border-left-color: rgba(160, 216, 239, 0.3); }
+.dark .prose pre { border: 1px solid rgba(160, 216, 239, 0.08); }
+.dark .prose code { background: #1a1a2e; color: #a0d8ef; }
+.dark .prose h2 { color: #a0d8ef; }
+.dark .prose a { color: #a0d8ef; }
+.dark .prose a:hover { color: #c8e8f5; }
+
+/* ============ 向下箭头浮动动画 ============ */
+@keyframes float-arrow {
+  0%, 100% { transform: translateY(0); opacity: 0.7; }
+  50% { transform: translateY(10px); opacity: 1; }
+}
+.animate-float-arrow {
+  animation: float-arrow 2s ease-in-out infinite;
+}
+
+/* ============ 文章目录（TOC）高亮样式 ============ */
+.toc-link.toc-active {
+  color: #2b6579;
+  font-weight: 600;
+  border-left: 2px solid #2b6579;
+  margin-left: -2px;
+}
+.dark .toc-link.toc-active {
+  color: #a0d8ef;
+  border-left-color: #a0d8ef;
+}
+.toc-link.toc-active {
+  position: relative;
+}
+.toc-link.toc-active::before {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #2b6579;
+  transition: top 0.3s ease;
+}
+.dark .toc-link.toc-active::before {
+  background: #a0d8ef;
+}
+
+/* ============ 图片 Lightbox 样式 ============ */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.85);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  cursor: zoom-out;
+  padding: 2rem;
+}
+.lightbox-overlay.lightbox-active {
+  display: flex;
+  opacity: 1;
+  pointer-events: auto;
+}
+.lightbox-img {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 8px;
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+  background: transparent;
+}
+.lightbox-overlay.lightbox-active .lightbox-img {
+  transform: scale(1);
+}
+
+/* ============ 日夜切换按钮动画 ============ */
+@keyframes toggle-spin {
+  from { transform: rotate(0deg) scale(0.6); opacity: 0; }
+  to { transform: rotate(360deg) scale(1); opacity: 1; }
+}
+.theme-btn-animate {
+  animation: toggle-spin 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ============ 卡片入场动画 ============ */
+@keyframes card-enter {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-card-enter {
+  animation: card-enter 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* 交错延迟（用于列表） */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
+
+/* ============ 文字打字机效果 ============ */
+@keyframes typing-cursor { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.typing-cursor::after {
+  content: '|';
+  animation: typing-cursor 1s infinite;
+  color: #a0d8ef;
+  margin-left: 2px;
+}
+
+/* ============ 图片懒加载淡入 ============ */
+img[loading="lazy"] {
+  transition: opacity 0.5s ease;
+}
+
+/* ============ prose 分割线样式 ============ */
+.prose hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #a0d8ef, transparent);
+  margin: 2rem 0;
+}
+
+/* ============ 文章列表 hover 效果 ============ */
+.post-card {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+  transform-style: preserve-3d;
+  border: 1px solid transparent;
+}
+.post-card:hover {
+  transform: translateY(-6px) perspective(800px) rotateX(1deg);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.05);
+  border-color: rgba(160, 216, 239, 0.3);
+}
+.dark .post-card:hover {
+  border-color: rgba(160, 216, 239, 0.15);
+}
+
+/* ============ 焦点可见（无障碍） ============ */
+:focus-visible {
+  outline: 2px solid #a0d8ef;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.dark :focus-visible {
+  outline-color: #a0d8ef;
+}
+
+/* ============ Ken Burns 动画 ============ */
+@keyframes ken-burns {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+.hero-ken-burns { animation: ken-burns 25s ease-in-out infinite; }
+
+/* ============ Hero 文字入场动画 ============ */
+@keyframes hero-fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero-fade-in { opacity: 0; animation: hero-fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.hero-fade-delay-1 { animation-delay: 0.1s; }
+.hero-fade-delay-2 { animation-delay: 0.3s; }
+.hero-fade-delay-3 { animation-delay: 0.5s; }
+.hero-fade-delay-4 { animation-delay: 0.7s; }
+
+/* ============ 打印样式 ============ */
+@media print {
+
+  /* --- 页面边距 --- */
+  @page {
+    margin: 2cm 1.5cm;
+  }
+
+  /* --- 隐藏非内容元素 --- */
+  #site-header,
+  #reading-progress,
+  #search-panel,
+  #music-player,
+  #back-to-top,
+  #mobile-toc-btn,
+  #mobile-toc-overlay,
+  #mobile-toc-panel,
+  .lightbox-overlay,
+  .waline-wrap,
+  #waline-comment,
+  nav.md\:hidden {
+    display: none !important;
+  }
+
+  /* 分享按钮区域 */
+  .share-btn {
+    display: none !important;
+  }
+  .share-btn ~ .share-btn,
+  .share-btn:first-child {
+    display: none !important;
+  }
+  /* 隐藏包含分享按钮的整个区块（分享这篇文章） */
+  .prose + div:has(.share-btn) {
+    display: none !important;
+  }
+
+  /* 页脚社交链接图标 */
+  footer .flex.justify-center {
+    display: none !important;
+  }
+
+  /* --- 重置基础样式 --- */
+  html {
+    scroll-padding-top: 0;
+  }
+
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 12pt;
+    line-height: 1.6;
+  }
+
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  /* 移除暗色模式残留 */
+  .dark body,
+  .dark .prose,
+  .dark .prose * {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  /* --- 文章内容布局 --- */
+  main,
+  article,
+  .prose {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  /* 移除固定导航栏导致的顶部偏移 */
+  body > *:first-child,
+  main {
+    padding-top: 0 !important;
+  }
+
+  /* --- 文章排版 --- */
+  .prose h1 { font-size: 20pt; }
+  .prose h2 { font-size: 16pt; color: #000 !important; border-left-color: #999 !important; }
+  .prose h3 { font-size: 14pt; }
+  .prose p { font-size: 12pt; line-height: 1.8; orphans: 3; widows: 3; }
+  .prose blockquote {
+    background: #f5f5f5 !important;
+    border-left-color: #999 !important;
+  }
+
+  /* --- 链接：显示外部链接 URL --- */
+  .prose a[href^="http"]:after {
+    content: " (" attr(href) ")";
+    font-size: 9pt;
+    color: #555;
+    word-break: break-all;
+  }
+  /* 不对内部导航链接追加 URL */
+  nav a[href]:after,
+  .toc-link:after,
+  a[href^="#"]:after,
+  a[href^="/"]:after {
+    content: "" !important;
+  }
+
+  /* --- 图片 --- */
+  img {
+    max-width: 100% !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* --- 代码块：保持深色背景方便阅读 --- */
+  .prose pre {
+    background: #1a1a2e !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #ccc;
+    border-radius: 4px !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    overflow-x: visible;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .prose pre code {
+    background: none !important;
+    color: inherit !important;
+  }
+  .prose code {
+    background: #eee !important;
+    color: #000 !important;
+  }
+
+  /* 隐藏代码复制按钮 */
+  .code-copy-btn {
+    display: none !important;
+  }
+
+  /* --- 避免分页打断 --- */
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  figure, table, pre, blockquote {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* --- 卡片/容器去边框 --- */
+  .bg-white,
+  .dark .dark\:bg-card-dark,
+  .glass {
+    border: none !important;
+    background: #fff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+}

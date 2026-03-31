@@ -1,0 +1,496 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import { siteConfig } from '../config';
+import MusicPlayer from '../components/MusicPlayer.astro';
+import Footer from '../components/Footer.astro';
+import MobileBottomNav from '../components/MobileBottomNav.astro';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+}
+const { title = siteConfig.name, description = siteConfig.description, image = '/images/covers/hero.webp' } = Astro.props;
+const pageTitle = title === siteConfig.name ? title : `${title} | ${siteConfig.name}`;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(image, Astro.site).href;
+
+/* 获取当前路径用于导航高亮 */
+const currentPath = Astro.url.pathname;
+---
+<!DOCTYPE html>
+<html lang={siteConfig.language}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#12111a" media="(prefers-color-scheme: dark)" />
+  <meta name="description" content={description} />
+  <meta name="author" content={siteConfig.author.name} />
+  <meta name="generator" content={Astro.generator} />
+  <link rel="canonical" href={canonicalURL} />
+  <!-- OpenGraph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={canonicalURL} />
+  <meta property="og:title" content={pageTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:site_name" content={siteConfig.name} />
+  <meta property="og:locale" content="zh_CN" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={pageTitle} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImage} />
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title={siteConfig.name + ' RSS'} href="/rss.xml" />
+  <title>{pageTitle}</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <!-- Manrope 字体已自托管，预加载 -->
+  <link rel="preload" href="/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <!-- Noto Serif SC 字体CSS单独加载，不打包进主CSS -->
+  <link rel="stylesheet" href="/css/noto-serif-sc.css" />
+  <ClientRouter />
+  {siteConfig.analytics.provider === '51la' && siteConfig.analytics.id && (
+    <>
+      <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+      <script set:html={`LA.init({id:"${siteConfig.analytics.id}",ck:"${siteConfig.analytics.id}",autoTrack:true,hashMode:true})`}></script>
+    </>
+  )}
+</head>
+<body class="bg-surface dark:bg-surface-dark font-body text-gray-800 dark:text-gray-200 min-h-screen">
+  <!-- 顶部导航栏 -->
+  <header id="site-header" class="fixed top-0 w-full z-50 shadow-sm bg-white/95 dark:bg-[#0f0e17]/95 backdrop-blur-md transition-transform duration-300">
+    <div class="max-w-7xl mx-auto flex justify-between items-center px-6 md:px-10 h-[76px]">
+      <!-- Logo: 樱花 SVG + 渐变文字 -->
+      <a href="/" class="flex items-center gap-3 group">
+        <svg class="w-8 h-8 text-[#FF8FA3] dark:text-[#FFB7C5] transition-transform duration-500 group-hover:rotate-45 group-hover:scale-110" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- 五瓣樱花 -->
+          <g transform="translate(16,16)">
+            <g fill="currentColor" opacity="0.85">
+              <ellipse cx="0" cy="-8" rx="3.5" ry="7" transform="rotate(0)" />
+              <ellipse cx="0" cy="-8" rx="3.5" ry="7" transform="rotate(72)" />
+              <ellipse cx="0" cy="-8" rx="3.5" ry="7" transform="rotate(144)" />
+              <ellipse cx="0" cy="-8" rx="3.5" ry="7" transform="rotate(216)" />
+              <ellipse cx="0" cy="-8" rx="3.5" ry="7" transform="rotate(288)" />
+            </g>
+            <circle cx="0" cy="0" r="3" fill="currentColor" opacity="0.4" />
+          </g>
+        </svg>
+        <span class="text-xl font-headline font-bold bg-gradient-to-r from-[#FFB7C5] via-[#FF8FA3] to-[#E75480] bg-clip-text text-transparent">
+          {siteConfig.name}
+        </span>
+      </a>
+
+      <!-- 桌面端导航链接 -->
+      <nav class="hidden md:flex items-center gap-14">
+        {siteConfig.nav.map(item => (
+          <a
+            href={item.href}
+            class:list={[
+              'relative font-headline text-sm tracking-wide py-1 transition-colors duration-300',
+              'after:absolute after:left-0 after:bottom-0 after:h-[1.5px] after:bg-primary dark:after:bg-primary-light after:transition-all after:duration-300',
+              currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href))
+                ? 'text-primary dark:text-primary-light after:w-full'
+                : 'text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary-light after:w-0 hover:after:w-full',
+            ]}
+          >
+            {item.label}
+          </a>
+        ))}
+      </nav>
+
+      <!-- 搜索 + 日夜切换 -->
+      <div class="flex items-center gap-3">
+        <button id="search-toggle" class="w-10 h-10 rounded-full border border-primary/20 dark:border-primary-light/20 shadow-sm hover:shadow-md transition-shadow duration-300 flex items-center justify-center cursor-pointer bg-white/60 dark:bg-white/5" aria-label="搜索">
+          <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </button>
+        <button
+          id="theme-toggle"
+          class="relative w-10 h-10 rounded-full border border-primary/20 dark:border-primary-light/20 shadow-sm hover:shadow-md transition-shadow duration-300 flex items-center justify-center cursor-pointer bg-white/60 dark:bg-white/5 overflow-hidden"
+          aria-label="切换深色/浅色模式"
+        >
+          <!-- 太阳（白天模式） -->
+          <span id="icon-sun" class="absolute inset-0 flex items-center justify-center transition-all duration-500">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4" fill="#f5c518" stroke="none" />
+              <line x1="12" y1="2" x2="12" y2="5" />
+              <line x1="12" y1="19" x2="12" y2="22" />
+              <line x1="4.22" y1="4.22" x2="6.34" y2="6.34" />
+              <line x1="17.66" y1="17.66" x2="19.78" y2="19.78" />
+              <line x1="2" y1="12" x2="5" y2="12" />
+              <line x1="19" y1="12" x2="22" y2="12" />
+              <line x1="4.22" y1="19.78" x2="6.34" y2="17.66" />
+              <line x1="17.66" y1="6.34" x2="19.78" y2="4.22" />
+            </svg>
+          </span>
+          <!-- 月亮（暗色模式） -->
+          <span id="icon-moon" class="absolute inset-0 flex items-center justify-center transition-all duration-500">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
+              <!-- 光晕 -->
+              <circle cx="12" cy="12" r="10" fill="#a0d8ef" opacity="0.15" />
+              <!-- 月亮主体 -->
+              <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z" fill="#a0d8ef" stroke="#7ec8e3" stroke-width="1" />
+            </svg>
+          </span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 阅读进度条 -->
+  <div id="reading-progress" class="fixed top-0 left-0 z-[60] h-[2px] bg-gradient-to-r from-primary to-primary-light" style="width: 0%;"></div>
+
+  <!-- 页面内容 -->
+  <main class="pt-[76px] pb-32 md:pb-16" transition:animate="fade">
+    <slot />
+  </main>
+
+  <!-- 内嵌搜索面板（导航栏下方展开） -->
+  <div id="search-panel" class="fixed top-[76px] left-0 right-0 z-[45] hidden" style="transition:transform 0.3s ease,opacity 0.3s ease;">
+    <div class="max-w-2xl mx-auto px-4 pt-3 pb-4">
+      <div class="rounded-2xl overflow-hidden shadow-xl border border-black/5 dark:border-white/5 bg-white/95 dark:bg-[#0f0e17]/95" style="backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);">
+        <div class="flex items-center gap-3 px-4 py-3">
+          <svg class="w-4 h-4 text-gray-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="search-input" type="text" placeholder="搜索文章标题、标签..." class="flex-1 bg-transparent text-gray-800 dark:text-gray-200 text-sm outline-none placeholder-gray-400" autocomplete="off" />
+          <button id="search-close" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xs">关闭</button>
+        </div>
+        <div id="search-results" class="max-h-72 overflow-y-auto border-t border-black/5 dark:border-white/5"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 搜索脚本 -->
+  <script is:inline>
+  (function() {
+    var panel, input, results, closeBtn, posts = null;
+
+    function getEls() {
+      panel = document.getElementById('search-panel');
+      input = document.getElementById('search-input');
+      results = document.getElementById('search-results');
+      closeBtn = document.getElementById('search-close');
+    }
+
+    function openSearch() {
+      getEls();
+      if (!panel) return;
+      panel.classList.remove('hidden');
+      input.value = '';
+      input.focus();
+      results.innerHTML = '';
+    }
+
+    function closeSearch() {
+      if (panel) panel.classList.add('hidden');
+    }
+
+    function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+    function doSearch(query) {
+      if (!posts || !query.trim()) { results.innerHTML = ''; return; }
+      var q = query.toLowerCase();
+      var matched = posts.filter(function(p) {
+        return p.title.toLowerCase().indexOf(q) !== -1 ||
+               p.summary.toLowerCase().indexOf(q) !== -1 ||
+               (p.tags && p.tags.join(' ').toLowerCase().indexOf(q) !== -1);
+      });
+      if (!matched.length) {
+        results.innerHTML = '<div class="text-center text-sm text-gray-400 py-4">没有找到相关文章</div>';
+        return;
+      }
+      results.innerHTML = matched.map(function(p) {
+        return '<a href="/blog/' + p.id + '/" class="flex items-center gap-3 px-4 py-3 hover:bg-primary/5 dark:hover:bg-primary-light/5 transition-colors">' +
+          (p.cover ? '<img src="' + esc(p.cover) + '" class="w-10 h-10 rounded-lg object-cover flex-shrink-0" />' : '') +
+          '<div class="min-w-0 flex-1">' +
+            '<div class="text-sm font-bold text-gray-800 dark:text-gray-200 truncate">' + esc(p.title) + '</div>' +
+            '<div class="text-[10px] text-gray-400 mt-0.5">' + esc(p.date) + (p.tags.length ? ' · ' + esc(p.tags.join('、')) : '') + '</div>' +
+          '</div></a>';
+      }).join('');
+    }
+
+    function init() {
+      getEls();
+      if (!panel) return;
+      if (!posts) {
+        fetch('/search.json').then(function(r) { return r.json(); }).then(function(d) { posts = d; });
+      }
+      var btn = document.getElementById('search-toggle');
+      if (btn && !btn._searchBound) {
+        btn._searchBound = true;
+        btn.addEventListener('click', function() {
+          panel.classList.contains('hidden') ? openSearch() : closeSearch();
+        });
+      }
+      if (closeBtn && !closeBtn._bound) {
+        closeBtn._bound = true;
+        closeBtn.addEventListener('click', closeSearch);
+      }
+      if (input && !input._bound) {
+        input._bound = true;
+        input.addEventListener('input', function() { doSearch(input.value); });
+        input.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeSearch(); });
+      }
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+    });
+
+    init();
+    document.addEventListener('astro:page-load', init);
+  })();
+  </script>
+
+  <Footer />
+
+  <MusicPlayer />
+
+  <MobileBottomNav currentPath={currentPath} />
+
+  <!-- 返回顶部按钮 -->
+  <button
+    id="back-to-top"
+    class="fixed bottom-[90px] md:bottom-10 left-6 z-30 w-11 h-11 rounded-full bg-gradient-to-br from-primary to-primary-light text-white shadow-lg flex items-center justify-center cursor-pointer transition-all duration-300 opacity-0 translate-y-4 pointer-events-none hover:shadow-xl hover:scale-110"
+    aria-label="返回顶部"
+  >
+    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="18 15 12 9 6 15" />
+    </svg>
+  </button>
+
+  <!-- 深色模式切换脚本 -->
+  <script is:inline>
+    (function() {
+      /* 初始化主题：每次按时间自动判断，手动切换只在当次会话生效 */
+      function initTheme() {
+        var hour = new Date().getHours();
+        var autoTheme = (hour >= 18 || hour < 6) ? 'dark' : 'light';
+        var manual = sessionStorage.getItem('theme');
+        var theme = manual || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : autoTheme);
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+
+      function updateIcons() {
+        var isDark = document.documentElement.classList.contains('dark');
+        var sun = document.getElementById('icon-sun');
+        var moon = document.getElementById('icon-moon');
+        if (sun && moon) {
+          if (isDark) {
+            sun.style.transform = 'rotate(-90deg) scale(0)';
+            sun.style.opacity = '0';
+            moon.style.transform = 'rotate(0deg) scale(1)';
+            moon.style.opacity = '1';
+          } else {
+            sun.style.transform = 'rotate(0deg) scale(1)';
+            sun.style.opacity = '1';
+            moon.style.transform = 'rotate(90deg) scale(0)';
+            moon.style.opacity = '0';
+          }
+        }
+      }
+
+      function bindToggle() {
+        var btn = document.getElementById('theme-toggle');
+        if (!btn || btn._themeBound) return;
+        btn._themeBound = true;
+        btn.addEventListener('click', function() {
+          document.documentElement.classList.toggle('dark');
+          sessionStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+          updateIcons();
+        });
+      }
+
+      /* 首次加载 */
+      initTheme();
+      updateIcons();
+      bindToggle();
+
+      /* View Transitions：DOM swap 后立即恢复主题（防止闪屏） */
+      document.addEventListener('astro:after-swap', function() {
+        initTheme();
+      });
+      /* 导航完成后重新绑定按钮和图标 */
+      document.addEventListener('astro:page-load', function() {
+        updateIcons();
+        bindToggle();
+      });
+    })();
+  </script>
+
+  <!-- 图片 Lightbox 容器 -->
+  <div id="lightbox-overlay" class="lightbox-overlay" aria-hidden="true">
+    <img id="lightbox-img" class="lightbox-img" src="" alt="" />
+  </div>
+
+  <!-- 图片点击放大脚本 -->
+  <script is:inline>
+    (function() {
+      function initLightbox() {
+        var overlay = document.getElementById('lightbox-overlay');
+        var lightboxImg = document.getElementById('lightbox-img');
+        if (!overlay || !lightboxImg) return;
+
+        document.querySelectorAll('.prose img, [data-lightbox] img').forEach(function(img) {
+          if (img._lightboxBound) return;
+          img._lightboxBound = true;
+          img.style.cursor = 'zoom-in';
+          img.addEventListener('click', function(e) {
+            e.preventDefault();
+            lightboxImg.src = img.src;
+            lightboxImg.alt = img.alt || '';
+            overlay.classList.add('lightbox-active');
+            overlay.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+          });
+        });
+
+        if (!overlay._bound) {
+          overlay._bound = true;
+          overlay.addEventListener('click', closeLightbox);
+          document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeLightbox();
+          });
+        }
+
+        function closeLightbox() {
+          overlay.classList.remove('lightbox-active');
+          overlay.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = '';
+        }
+      }
+
+      initLightbox();
+      document.addEventListener('astro:page-load', initLightbox);
+    })();
+  </script>
+
+  <!-- 代码块一键复制 -->
+  <script is:inline>
+  (function() {
+    function addCopyButtons() {
+      document.querySelectorAll('.prose pre').forEach(function(pre) {
+        if (pre.querySelector('.code-copy-btn')) return;
+        var btn = document.createElement('button');
+        btn.className = 'code-copy-btn';
+        btn.textContent = '复制';
+        btn.onclick = function() {
+          var code = pre.querySelector('code');
+          var text = code ? code.textContent : pre.textContent;
+          if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(done);
+          } else {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px;opacity:0;';
+            document.body.appendChild(ta);
+            ta.focus(); ta.select();
+            try { document.execCommand('copy'); done(); } catch(e) {}
+            document.body.removeChild(ta);
+          }
+          function done() {
+            btn.textContent = '已复制';
+            btn.classList.add('copied');
+            setTimeout(function() { btn.textContent = '复制'; btn.classList.remove('copied'); }, 1500);
+          }
+        };
+        pre.appendChild(btn);
+      });
+    }
+    addCopyButtons();
+    document.addEventListener('astro:page-load', addCopyButtons);
+  })();
+  </script>
+
+  <!-- 阅读进度条 & 返回顶部 & 导航栏自动隐藏 -->
+  <script is:inline>
+    (function() {
+      var scrollHandler = null;
+
+      function initScrollEffects() {
+        /* 移除旧监听器 */
+        if (scrollHandler) window.removeEventListener('scroll', scrollHandler);
+
+        /* 重新获取 DOM 引用 */
+        var progressBar = document.getElementById('reading-progress');
+        var backToTop = document.getElementById('back-to-top');
+        var header = document.getElementById('site-header');
+        if (!header) return;
+
+        var lastScrollY = 0;
+        var headerHidden = false;
+        var HIDE_THRESHOLD = 80;
+
+        scrollHandler = function() {
+          var scrollTop = window.scrollY || document.documentElement.scrollTop;
+          var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          var progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+
+          if (progressBar) {
+            progressBar.style.width = Math.min(progress, 100) + '%';
+          }
+
+          /* 返回顶部按钮 */
+          if (backToTop) {
+            if (scrollTop > 500) {
+              backToTop.style.opacity = '1';
+              backToTop.style.transform = 'translateY(0)';
+              backToTop.style.pointerEvents = 'auto';
+            } else {
+              backToTop.style.opacity = '0';
+              backToTop.style.transform = 'translateY(1rem)';
+              backToTop.style.pointerEvents = 'none';
+            }
+          }
+
+          /* 导航栏：下滑隐藏、上滑显示 */
+          if (header) {
+            var delta = scrollTop - lastScrollY;
+            if (scrollTop > HIDE_THRESHOLD && delta > 5 && !headerHidden) {
+              header.style.transform = 'translateY(-100%)';
+              /* 进度条不再跟随导航栏隐藏 */
+              headerHidden = true;
+            } else if (delta < -5 && headerHidden) {
+              header.style.transform = 'translateY(0)';
+              /* 进度条始终可见 */
+              headerHidden = false;
+            }
+            /* 顶部无阴影，滚动后加阴影 */
+            if (scrollTop > 10) {
+              header.classList.remove('shadow-sm');
+              header.classList.add('shadow-md');
+            } else {
+              header.classList.remove('shadow-md');
+              header.classList.add('shadow-sm');
+              header.style.transform = 'translateY(0)';
+              /* 进度条始终可见 */
+              headerHidden = false;
+            }
+          }
+          lastScrollY = scrollTop;
+        };
+
+        if (backToTop && !backToTop._scrollBound) {
+          backToTop._scrollBound = true;
+          backToTop.addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }
+
+        window.addEventListener('scroll', scrollHandler, { passive: true });
+        scrollHandler(); /* 立即执行一次 */
+      }
+
+      initScrollEffects();
+      document.addEventListener('astro:page-load', initScrollEffects);
+    })();
+  </script>
+</body>
+</html>

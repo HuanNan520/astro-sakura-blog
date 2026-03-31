@@ -1,0 +1,63 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog')).filter(p => !p.data.hidden).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+// 收集所有标签及其文章
+const tagMap: Record<string, typeof posts> = {};
+for (const post of posts) {
+  for (const tag of post.data.tags || []) {
+    if (!tagMap[tag]) tagMap[tag] = [];
+    tagMap[tag].push(post);
+  }
+}
+
+const sortedTags = Object.keys(tagMap).sort((a, b) => tagMap[b].length - tagMap[a].length);
+---
+<Base title="标签" description="Browse all tags">
+  <section class="max-w-3xl mx-auto px-6 md:px-8 py-20">
+    <h1 class="text-3xl md:text-4xl font-headline text-gray-800 dark:text-gray-100 mb-2">标签</h1>
+    <p class="text-muted dark:text-gray-400 mb-12">共 {sortedTags.length} 个标签</p>
+
+    <!-- 标签云 -->
+    <div class="flex flex-wrap gap-3 mb-16">
+      {sortedTags.map(tag => (
+        <a
+          href={`#tag-${tag}`}
+          class="px-4 py-2 bg-white dark:bg-card-dark rounded-full shadow-sm text-sm text-gray-700 dark:text-gray-300 hover:bg-primary-light/20 hover:text-primary dark:hover:bg-primary/20 dark:hover:text-primary-light transition-all duration-300 border border-black/5 dark:border-white/5"
+        >
+          {tag}
+          <span class="ml-1 text-xs text-muted dark:text-gray-500">({tagMap[tag].length})</span>
+        </a>
+      ))}
+    </div>
+
+    <!-- 每个标签下的文章 -->
+    <div class="flex flex-col gap-12">
+      {sortedTags.map(tag => (
+        <div id={`tag-${tag}`}>
+          <h2 class="text-xl font-headline text-primary dark:text-primary-light mb-4 flex items-center gap-2">
+            <span class="text-base">#</span> {tag}
+            <span class="text-sm text-muted dark:text-gray-500 font-normal">({tagMap[tag].length})</span>
+          </h2>
+          <div class="flex flex-col gap-3 pl-4 border-l-2 border-primary-light/30 dark:border-primary/30">
+            {tagMap[tag].map(post => (
+              <a
+                href={`/blog/${post.id}`}
+                class="group flex items-baseline gap-4 py-1 hover:text-primary dark:hover:text-primary-light transition-colors duration-300"
+              >
+                <span class="text-sm text-muted dark:text-gray-500 flex-shrink-0 w-24">
+                  {post.data.date.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })}
+                </span>
+                <span class="text-gray-800 dark:text-gray-200 group-hover:text-primary dark:group-hover:text-primary-light transition-colors duration-300">
+                  {post.data.title}
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+</Base>
