@@ -2,6 +2,27 @@
 
 A beautiful, feature-rich blog template built with Astro 6 and Tailwind CSS, featuring a cherry blossom aesthetic and a built-in music player.
 
+**Live Demo:** [huannan.top](https://huannan.top)
+
+![Homepage](screenshots/homepage.png)
+
+<details>
+<summary>More Screenshots</summary>
+
+### Dark Mode
+![Dark Mode](screenshots/dark-mode.png)
+
+### Blog List
+![Blog](screenshots/blog.png)
+
+### Article Page
+![Article](screenshots/article.png)
+
+### Mobile
+<img src="screenshots/mobile.png" width="390" alt="Mobile" />
+
+</details>
+
 ## Features
 
 - **Cherry Blossom Theme** — Sakura-inspired design with glassmorphism, gradient accents, and smooth animations
