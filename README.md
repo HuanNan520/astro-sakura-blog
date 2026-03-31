@@ -1,5 +1,9 @@
 # Astro Sakura Blog
 
+[![Astro](https://img.shields.io/badge/Astro-6-ff5d01?logo=astro&logoColor=white)](https://astro.build)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A beautiful, feature-rich blog template built with Astro 6 and Tailwind CSS, featuring a cherry blossom aesthetic and a built-in music player.
 
 [**Live Demo**](https://huannan.top) | [**Chinese / 中文文档**](README.zh-CN.md)
