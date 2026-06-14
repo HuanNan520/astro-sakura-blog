@@ -2,44 +2,44 @@
 import { instrumental, vocal, lyrics } from '../data/playlist';
 const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
 ---
-  <!-- 自定义全局音乐播放器 -->
+  <!-- Custom global music player -->
   <div id="music-player" data-playlist={playlistData} class="fixed z-40 transition-all duration-500 opacity-0 translate-y-8 pointer-events-none bottom-[90px] md:bottom-6 right-4 md:right-6" transition:persist>
-    <!-- 展开状态 -->
+    <!-- Expanded state -->
     <div id="player-full" class="relative flex items-center gap-0 rounded-2xl overflow-hidden shadow-2xl">
-      <!-- Apple Music 风格高斯模糊封面背景 -->
+      <!-- Apple Music-style blurred cover background -->
       <div id="player-full-bg" class="absolute inset-0 z-0" style="background-size:cover;background-position:center;filter:blur(30px) saturate(1.6) brightness(1.1);opacity:0.6;transform:scale(1.5);"></div>
       <div id="player-full-glass" class="absolute inset-0 z-[1]" style="background:rgba(255,255,255,0.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);"></div>
-      <!-- 旋转圆盘封面 -->
+      <!-- Spinning disc cover -->
       <div class="relative z-[2] w-16 h-16 md:w-20 md:h-20 flex-shrink-0 cursor-pointer ml-2 my-2" id="player-cover-wrap">
         <div class="w-full h-full rounded-full shadow-lg flex items-center justify-center" id="player-disc">
-          <!-- 外圈：封面图铺满 -->
+          <!-- Outer ring: cover image fills it -->
           <div class="absolute inset-0 rounded-full overflow-hidden">
             <img id="player-cover" src="/images/covers/cover-1.webp" alt="" class="w-full h-full object-cover !rounded-none" />
           </div>
-          <!-- 中心黑色圆孔 -->
+          <!-- Center black hole -->
           <div class="absolute w-4 h-4 md:w-5 md:h-5 rounded-full bg-gray-900 z-10 border border-gray-700/50"></div>
-          <!-- 中心小圆点 -->
+          <!-- Center dot -->
           <div class="absolute w-1.5 h-1.5 rounded-full bg-gray-400 z-20"></div>
-          <!-- 唱片纹路（半透明叠在封面上） -->
+          <!-- Record grooves (semi-transparent over the cover) -->
           <div class="absolute inset-[2px] rounded-full border border-black/10"></div>
           <div class="absolute inset-[5px] rounded-full border border-black/5"></div>
           <div class="absolute inset-0 rounded-full border-2 border-black/20"></div>
         </div>
       </div>
-      <!-- 控制区 -->
+      <!-- Controls area -->
       <div class="relative z-[2] flex flex-col justify-center px-4 py-2 min-w-[200px] md:min-w-[280px]">
-        <!-- 歌曲信息 -->
+        <!-- Track info -->
         <div class="flex items-center justify-between mb-1">
           <div class="min-w-0 mr-3">
-            <div id="player-title" class="text-sm font-bold text-gray-800 dark:text-white truncate cursor-pointer hover:text-primary dark:hover:text-primary-light transition-colors" style="text-shadow:0 1px 3px rgba(0,0,0,0.1);" title="点击复制歌名">载入中...</div>
-            <div id="player-artist" class="text-[10px] text-gray-500 dark:text-gray-300 truncate cursor-pointer hover:text-primary dark:hover:text-primary-light transition-colors" title="点击复制歌手">Sakura Blog</div>
+            <div id="player-title" class="text-sm font-bold text-gray-800 dark:text-white truncate cursor-pointer hover:text-primary dark:hover:text-primary-light transition-colors" style="text-shadow:0 1px 3px rgba(0,0,0,0.1);" title="Click to copy track name">Loading...</div>
+            <div id="player-artist" class="text-[10px] text-gray-500 dark:text-gray-300 truncate cursor-pointer hover:text-primary dark:hover:text-primary-light transition-colors" title="Click to copy artist">Sakura Blog</div>
           </div>
-          <!-- 收起按钮 -->
-          <button id="player-minimize" class="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0" title="收起">
+          <!-- Minimize button -->
+          <button id="player-minimize" class="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0" title="Minimize">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
         </div>
-        <!-- 进度条 -->
+        <!-- Progress bar -->
         <div class="flex items-center gap-2 mb-1.5">
           <span id="player-current" class="text-[9px] text-gray-400 w-8 text-right font-mono">0:00</span>
           <div id="player-progress-wrap" class="flex-1 h-1 bg-black/10 dark:bg-white/15 rounded-full cursor-pointer relative group">
@@ -48,36 +48,36 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
           </div>
           <span id="player-duration" class="text-[9px] text-gray-400 w-8 font-mono">0:00</span>
         </div>
-        <!-- 控制按钮 -->
+        <!-- Control buttons -->
         <div class="flex items-center justify-center gap-3">
-          <!-- 随机/顺序切换 -->
-          <button id="player-shuffle" class="text-primary transition-all duration-300" title="随机播放">
+          <!-- Shuffle / sequential toggle -->
+          <button id="player-shuffle" class="text-primary transition-all duration-300" title="Shuffle">
             <svg id="icon-shuffle" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
             <svg id="icon-sequential" class="w-4 h-4 hidden" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/><path d="M19 15l3 3-3 3v-6z"/></svg>
           </button>
-          <button id="player-prev" class="text-gray-500 hover:text-primary transition-colors" title="上一首">
+          <button id="player-prev" class="text-gray-500 hover:text-primary transition-colors" title="Previous">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
           </button>
-          <button id="player-toggle" class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary-light text-white flex items-center justify-center shadow-md hover:shadow-lg hover:scale-105 transition-all" title="播放/暂停">
+          <button id="player-toggle" class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary-light text-white flex items-center justify-center shadow-md hover:shadow-lg hover:scale-105 transition-all" title="Play / Pause">
             <svg id="btn-play" class="w-4 h-4 ml-0.5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
             <svg id="btn-pause" class="w-4 h-4 hidden" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
           </button>
-          <button id="player-next" class="text-gray-500 hover:text-primary transition-colors" title="下一首">
+          <button id="player-next" class="text-gray-500 hover:text-primary transition-colors" title="Next">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
           </button>
-          <button id="player-lyric-toggle" class="text-gray-400 hover:text-primary transition-colors text-xs font-bold leading-none" title="歌词" style="font-family:serif;min-width:16px;">词</button>
-          <button id="player-list-toggle" class="text-gray-400 hover:text-primary transition-colors" title="播放列表">
+          <button id="player-lyric-toggle" class="text-gray-400 hover:text-primary transition-colors text-xs font-bold leading-none" title="Lyrics" style="font-family:serif;min-width:16px;">L</button>
+          <button id="player-list-toggle" class="text-gray-400 hover:text-primary transition-colors" title="Playlist">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
           </button>
-          <!-- 音量 -->
-          <button id="player-vol-btn" class="text-gray-400 hover:text-primary transition-colors" title="音量">
+          <!-- Volume -->
+          <button id="player-vol-btn" class="text-gray-400 hover:text-primary transition-colors" title="Volume">
             <svg id="vol-icon-on" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
             <svg id="vol-icon-off" class="w-4 h-4 hidden" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
           </button>
         </div>
       </div>
     </div>
-    <!-- 歌词字幕条（默认显示，点击展开完整歌词） -->
+    <!-- Lyric subtitle bar (shown by default, click to expand full lyrics) -->
     <div id="player-subtitle" class="hidden md:block absolute left-0 right-0 rounded-xl overflow-hidden shadow-lg border border-white/10 text-center cursor-pointer" style="bottom:calc(100% + 8px);">
       <div id="subtitle-bg" class="absolute inset-0 z-0" style="background-size:cover;background-position:center;filter:blur(20px) saturate(1.4);opacity:0.35;transform:scale(1.2);"></div>
       <div id="subtitle-glass" class="absolute inset-0 z-[1]" style="background:rgba(255,255,255,0.72);backdrop-filter:blur(14px) saturate(1.6);-webkit-backdrop-filter:blur(14px) saturate(1.6);"></div>
@@ -86,40 +86,40 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
         <div id="subtitle-zh" class="text-[11px] leading-snug mt-0.5 opacity-75 subtitle-text-enter"></div>
       </div>
     </div>
-    <!-- 完整歌词面板（点击字幕条展开，默认隐藏） -->
+    <!-- Full lyric panel (expands when the subtitle bar is clicked, hidden by default) -->
     <div id="player-lyric-panel" class="hidden absolute left-0 rounded-2xl overflow-hidden shadow-2xl border border-white/10" style="bottom:calc(100% + 8px);width:100%;max-height:380px;">
       <div id="lyric-panel-bg" class="absolute inset-0 z-0" style="background-size:cover;background-position:center;filter:blur(40px) saturate(1.2) brightness(0.9);opacity:0.5;transform:scale(1.3);"></div>
       <div id="lyric-panel-glass" class="absolute inset-0 z-[1]" style="background:rgba(255,255,255,0.58);backdrop-filter:blur(16px) saturate(1.6);-webkit-backdrop-filter:blur(16px) saturate(1.6);"></div>
       <div class="relative z-[2] flex items-center justify-between px-4 pt-3 pb-1">
-        <span class="text-[10px] text-gray-400/70">歌词</span>
-        <button id="lyric-panel-close" class="text-gray-400 hover:text-gray-600 text-xs transition-colors">收起 ▾</button>
+        <span class="text-[10px] text-gray-400/70">Lyrics</span>
+        <button id="lyric-panel-close" class="text-gray-400 hover:text-gray-600 text-xs transition-colors">Collapse ▾</button>
       </div>
       <div id="player-lyric-content" class="relative z-[2] overflow-y-auto px-5 py-2 lyric-mask" style="max-height:332px;">
-        <div class="text-center text-sm text-gray-400">暂无歌词</div>
+        <div class="text-center text-sm text-gray-400">No lyrics available</div>
       </div>
     </div>
-    <!-- 播放列表（向上弹出） -->
+    <!-- Playlist (pops up) -->
     <div id="player-list" class="hidden absolute left-0 right-0 rounded-2xl overflow-hidden shadow-2xl max-h-64 overflow-y-auto border border-white/20" style="bottom:calc(100% + 8px);background:rgba(255,255,255,0.88);backdrop-filter:blur(24px) saturate(1.8);-webkit-backdrop-filter:blur(24px) saturate(1.8);">
       <div id="player-list-items" class="py-1.5"></div>
     </div>
-    <!-- 音量滑块（固定定位，最高层级，不被任何元素遮挡） -->
+    <!-- Volume slider (fixed position, top layer, never obscured by any element) -->
     <div id="player-vol-slider" class="hidden fixed z-[9999] rounded-xl shadow-2xl border border-white/10" style="background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);width:34px;height:96px;padding:10px 0;">
       <div class="relative w-1 h-full mx-auto bg-black/10 dark:bg-white/15 rounded-full cursor-pointer" id="vol-track">
         <div class="absolute bottom-0 w-full bg-primary rounded-full" id="vol-fill" style="height:80%"></div>
         <div class="absolute w-3 h-3 bg-primary rounded-full shadow -left-1" id="vol-dot" style="bottom:80%;transform:translateY(50%)"></div>
       </div>
     </div>
-    <!-- 迷你模式（收起后） -->
-    <div id="player-mini" class="hidden relative w-14 h-14 md:w-16 md:h-16 rounded-full overflow-hidden shadow-2xl cursor-pointer border-2 border-white/40 hover:border-primary/40 transition-colors" title="点击展开 · 双击暂停">
+    <!-- Mini mode (after collapsing) -->
+    <div id="player-mini" class="hidden relative w-14 h-14 md:w-16 md:h-16 rounded-full overflow-hidden shadow-2xl cursor-pointer border-2 border-white/40 hover:border-primary/40 transition-colors" title="Click to expand · double-click to pause">
       <img id="player-mini-cover" src="/images/covers/cover-1.webp" alt="" class="w-full h-full object-cover !rounded-none player-spin" />
-      <!-- 暂停/播放状态指示 -->
+      <!-- Pause / play state indicator -->
       <div id="mini-pause-indicator" class="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 transition-opacity duration-200 pointer-events-none">
         <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
       </div>
     </div>
   </div>
 
-  <!-- 暗色模式播放器样式 -->
+  <!-- Dark mode player styles -->
   <style is:global>
     .dark #player-full-bg { filter: blur(30px) saturate(1.2) brightness(0.4) !important; opacity: 0.7 !important; }
     .dark #player-full-glass { background: rgba(15,14,23,0.5) !important; }
@@ -137,16 +137,16 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
     .dark .lyric-line-ja { color: #d1d5db !important; }
     .dark .lyric-line-zh { color: #9ca3af !important; }
 
-    /* ===== 歌词 Luminous Veil 设计 ===== */
+    /* ===== Lyrics: Luminous Veil design ===== */
 
-    /* 边缘渐隐遮罩 */
+    /* Edge fade-out mask */
     .lyric-mask {
       mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
       -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
       contain: content;
     }
 
-    /* 歌词行基础：远处模糊淡化 */
+    /* Lyric row base: distant rows blurred and faded */
     .lyric-row {
       opacity: 0.25;
       transform: scale(0.94);
@@ -160,11 +160,11 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
     .lyric-row:hover { opacity: 0.5; background: rgba(0,0,0,0.03); }
     .dark .lyric-row:hover { background: rgba(255,255,255,0.04); }
 
-    /* 相邻行：渐进可见 */
+    /* Adjacent rows: progressively visible */
     .lyric-adj-1 { opacity: 0.55 !important; transform: scale(0.98) !important; filter: blur(0px) !important; will-change: transform, opacity, filter; }
     .lyric-adj-2 { opacity: 0.4 !important; transform: scale(0.96) !important; filter: blur(0.2px) !important; will-change: transform, opacity, filter; }
 
-    /* 活跃行：高亮发光 */
+    /* Active row: highlighted and glowing */
     .lyric-active {
       opacity: 1 !important;
       transform: scale(1.05) !important;
@@ -193,14 +193,14 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       text-shadow: 0 0 12px rgba(232,121,168,0.15);
     }
 
-    /* 暗色模式活跃行 */
+    /* Dark mode active row */
     .dark .lyric-active::before { background: radial-gradient(ellipse at center, rgba(160,216,239,0.12) 0%, transparent 70%); }
     .dark .lyric-active .lyric-line-ja { color: #a0d8ef !important; text-shadow: 0 0 20px rgba(160,216,239,0.3), 0 0 50px rgba(160,216,239,0.1); }
     .dark .lyric-active .lyric-line-zh { color: #7ec8e3 !important; text-shadow: 0 0 14px rgba(126,200,227,0.2); }
 
     @keyframes lyric-glow { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
-    /* 字幕条文字入场动画 */
+    /* Subtitle bar text entrance animation */
     @keyframes subtitle-slide-in {
       from { opacity: 0; transform: translateY(6px); filter: blur(3px); }
       to { opacity: 1; transform: translateY(0); filter: blur(0px); }
@@ -211,18 +211,18 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
     #subtitle-zh { color: #6b7280; }
     .dark #subtitle-zh { color: #9ca3af; }
 
-    /* 面板开关动画 */
+    /* Panel open/close animation */
     #player-lyric-panel { transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
     .panel-entering { opacity: 0 !important; transform: translateY(12px) scale(0.97) !important; }
     .panel-visible { opacity: 1 !important; transform: translateY(0) scale(1) !important; }
 
-    /* 滚动条 */
+    /* Scrollbar */
     #player-lyric-content::-webkit-scrollbar { width: 2px; }
     #player-lyric-content::-webkit-scrollbar-track { background: transparent; }
     #player-lyric-content::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, rgba(217,70,168,0.2), rgba(160,216,239,0.2)); border-radius: 3px; }
     .dark #player-lyric-content::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, rgba(160,216,239,0.15), rgba(126,200,227,0.1)); }
 
-    /* 暗色模式面板背景 */
+    /* Dark mode panel background */
     .dark #subtitle-glass { background: rgba(15,14,23,0.72) !important; }
     .dark #lyric-panel-glass { background: rgba(15,14,23,0.62) !important; }
     .dark #lyric-panel-bg { filter: blur(40px) saturate(1.0) brightness(0.35) !important; opacity: 0.6 !important; }
@@ -230,12 +230,12 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
     .dark .pl-item:hover { background: rgba(160,216,239,0.1) !important; }
     .dark .pl-item.active { color: #a0d8ef !important; }
 
-    /* 封面旋转动画 */
+    /* Cover spin animation */
     @keyframes cover-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     .player-spin { animation: cover-spin 12s linear infinite; }
     .player-spin-paused { animation-play-state: paused; }
 
-    /* 拖动时禁止选中文字 */
+    /* Disable text selection while dragging */
     .dragging-player { user-select: none !important; -webkit-user-select: none !important; }
   </style>
 
@@ -243,14 +243,14 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
   (function() {
     if (window._musicPlayer) return;
 
-    /* ===== 从 data 属性读取播放列表 ===== */
+    /* ===== Read the playlist from the data attribute ===== */
     var dataEl = document.getElementById('music-player');
     var _data = JSON.parse(dataEl.dataset.playlist || '{"instrumental":[],"vocal":[],"lyrics":{}}');
     var instrumental = _data.instrumental || [];
     var vocal = _data.vocal || [];
     var lyrics = _data.lyrics || {};
 
-    /* 纯音乐优先：先纯音乐，再有歌词的（顺序播放时按此顺序） */
+    /* Instrumentals first, then tracks with lyrics (this is the sequential play order) */
     var playlist = instrumental.concat(vocal);
 
     var audio = new Audio();
@@ -298,7 +298,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       return m + ':' + (sec < 10 ? '0' : '') + sec;
     }
 
-    /* ===== 歌词功能（容器内平滑滚动） ===== */
+    /* ===== Lyrics feature (smooth scrolling within the container) ===== */
     var currentLyricIdx = -1;
     var lyricUserScrolling = false;
     var lyricScrollTimer = null;
@@ -308,7 +308,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       var track = playlist[currentIdx];
       var lrc = lyrics[track.name];
       if (!lrc) {
-        el.lyricContent.innerHTML = '<div class="flex flex-col items-center justify-center py-8 text-gray-400"><svg class="w-8 h-8 mb-2 opacity-40" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg><span class="text-sm">纯音乐 · 暂无歌词</span></div>';
+        el.lyricContent.innerHTML = '<div class="flex flex-col items-center justify-center py-8 text-gray-400"><svg class="w-8 h-8 mb-2 opacity-40" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg><span class="text-sm">Instrumental · no lyrics</span></div>';
         cachedLyricRows = null;
         return;
       }
@@ -326,13 +326,13 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       cachedLyricRows = el.lyricContent.querySelectorAll('.lyric-row');
       currentLyricIdx = -1;
 
-      /* 设置封面背景 */
+      /* Set the cover background */
       var panelBg = document.getElementById('lyric-panel-bg');
       var subtitleBg = document.getElementById('subtitle-bg');
       if (panelBg) panelBg.style.backgroundImage = 'url(' + track.cover + ')';
       if (subtitleBg) subtitleBg.style.backgroundImage = 'url(' + track.cover + ')';
 
-      /* 点击歌词跳转 */
+      /* Click a lyric line to seek */
       el.lyricContent.querySelectorAll('.lyric-row').forEach(function(row) {
         row.onclick = function() {
           var idx = parseInt(row.getAttribute('data-lyric-idx'));
@@ -340,7 +340,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
         };
       });
 
-      /* 用户手动滚动暂停自动滚动 */
+      /* Manual scrolling pauses auto-scroll */
       el.lyricContent.onwheel = el.lyricContent.ontouchmove = el.lyricContent.ontouchstart = function() {
         lyricUserScrolling = true;
         if (lyricScrollRAF) cancelAnimationFrame(lyricScrollRAF);
@@ -371,7 +371,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       lyricScrollRAF = requestAnimationFrame(step);
     }
 
-    /* 更新字幕条（默认显示的当前歌词） */
+    /* Update the subtitle bar (the current lyric shown by default) */
     var subtitleIdx = -1;
     function updateSubtitle() {
       var track = playlist[currentIdx];
@@ -384,7 +384,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
         }
         return;
       }
-      if (!el.lyricPanel.classList.contains('hidden')) return; /* 歌词面板展开时不更新字幕条 */
+      if (!el.lyricPanel.classList.contains('hidden')) return; /* Skip the subtitle bar while the lyric panel is open */
       el.subtitle.style.display = '';
       var time = audio.currentTime;
       var idx = -1;
@@ -394,7 +394,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       if (idx === subtitleIdx) return;
       subtitleIdx = idx;
       if (idx >= 0) {
-        /* CSS 动画入场：移除→强制重排→重新添加 */
+        /* CSS entrance animation: remove → force reflow → re-add */
         el.subtitleJa.classList.remove('subtitle-text-enter');
         el.subtitleZh.classList.remove('subtitle-text-enter');
         void el.subtitleJa.offsetWidth;
@@ -442,7 +442,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       el.lyricPanel.classList.add('panel-entering');
       el.list.classList.add('hidden');
       el.subtitle.style.display = 'none';
-      /* 移动端限制高度 */
+      /* Limit height on mobile */
       var maxH = Math.min(380, window.innerHeight * 0.55);
       el.lyricPanel.style.maxHeight = maxH + 'px';
       el.lyricContent.style.maxHeight = (maxH - 48) + 'px';
@@ -464,13 +464,13 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       }, 350);
     }
 
-    /* 点击字幕条 → 展开完整歌词 */
+    /* Click the subtitle bar → expand the full lyrics */
     el.subtitle.onclick = function() {
       if (!lyrics[playlist[currentIdx].name]) return;
       openLyricPanel();
     };
 
-    /* 「词」按钮也可以切换 */
+    /* The "L" button toggles it too */
     el.lyricToggle.onclick = function() {
       if (el.lyricPanel.classList.contains('hidden')) {
         openLyricPanel();
@@ -479,7 +479,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       }
     };
 
-    /* 歌词面板「收起」按钮 */
+    /* Lyric panel "collapse" button */
     var lyricClose = document.getElementById('lyric-panel-close');
     if (lyricClose) {
       lyricClose.onclick = function() { closeLyricPanel(); };
@@ -498,14 +498,14 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       el.miniCover.src = track.cover;
       el.title.textContent = track.name;
       el.artist.textContent = track.artist;
-      /* 同步封面到所有高斯模糊背景 */
+      /* Sync the cover to all blurred backgrounds */
       var bgUrl = 'url(' + track.cover + ')';
       var ids = ['player-full-bg', 'lyric-panel-bg', 'subtitle-bg'];
       ids.forEach(function(id) { var e = document.getElementById(id); if (e) e.style.backgroundImage = bgUrl; });
 
-      /* 预加载相邻歌曲封面 */
+      /* Preload the next track's cover */
       (new Image()).src = playlist[(idx + 1) % playlist.length].cover;
-      /* 更新系统媒体信息（通知栏/锁屏显示歌曲详情） */
+      /* Update system media metadata (track details in the notification shade / lock screen) */
       if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
           title: track.name,
@@ -518,18 +518,18 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       currentLyricIdx = -1;
       subtitleIdx = -1;
       lyricUserScrolling = false;
-      /* 有歌词：显示字幕条；纯音乐：隐藏 */
+      /* With lyrics: show the subtitle bar; instrumental: hide it */
       var hasLrc = !!lyrics[track.name];
       el.subtitleJa.textContent = '';
       el.subtitleZh.textContent = '';
-      /* 歌词面板是否展开（含动画过渡中） */
+      /* Whether the lyric panel is open (including mid-animation) */
       var panelOpen = !el.lyricPanel.classList.contains('hidden');
       if (panelOpen) {
         if (hasLrc) {
           buildLyricPanel();
           el.subtitle.style.display = 'none';
         } else {
-          /* 纯音乐：立即关闭面板 */
+          /* Instrumental: close the panel immediately */
           el.lyricPanel.classList.add('hidden');
           el.lyricPanel.classList.remove('panel-entering', 'panel-visible');
           el.subtitle.style.display = 'none';
@@ -537,7 +537,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       } else {
         el.subtitle.style.display = hasLrc ? '' : 'none';
       }
-      /* 同步封面背景 */
+      /* Sync the cover background */
       var subtitleBg = document.getElementById('subtitle-bg');
       if (subtitleBg) subtitleBg.style.backgroundImage = 'url(' + track.cover + ')';
     }
@@ -554,7 +554,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
         el.miniCover.classList.remove('player-spin-paused');
         if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
       }).catch(function() {
-        /* 浏览器拒绝自动播放 → 标记待播放，下次用户点击时重试 */
+        /* Browser blocked autoplay → mark as pending, retry on the next user click */
         window._musicPendingPlay = true;
       });
     }
@@ -570,7 +570,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
     }
 
-    /* 播放模式：随机 / 顺序 */
+    /* Play mode: shuffle / sequential */
     var shuffleMode = true;
     var iconShuffle = document.getElementById('icon-shuffle');
     var iconSeq = document.getElementById('icon-sequential');
@@ -580,13 +580,13 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       if (shuffleMode) {
         iconShuffle.classList.remove('hidden');
         iconSeq.classList.add('hidden');
-        el.shuffleBtn.title = '随机播放';
+        el.shuffleBtn.title = 'Shuffle';
       } else {
         iconShuffle.classList.add('hidden');
         iconSeq.classList.remove('hidden');
-        el.shuffleBtn.title = '顺序播放';
+        el.shuffleBtn.title = 'Sequential';
       }
-      /* 按钮弹跳动画 */
+      /* Button bounce animation */
       el.shuffleBtn.style.transform = 'scale(1.3)';
       setTimeout(function() { el.shuffleBtn.style.transform = 'scale(1)'; }, 200);
     };
@@ -602,11 +602,11 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       play();
     }
 
-    /* 点击歌名/歌手复制 */
+    /* Click the track name / artist to copy */
     function copyToClipboard(text, el) {
       var origText = el.textContent;
       function showDone() {
-        el.textContent = '已复制 ✓';
+        el.textContent = 'Copied ✓';
         setTimeout(function() { el.textContent = origText; }, 1200);
       }
       if (navigator.clipboard && window.isSecureContext) {
@@ -633,7 +633,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       copyToClipboard(el.artist.textContent, el.artist);
     };
 
-    /* 音量控制 */
+    /* Volume control */
     (function() {
       var volBtn = document.getElementById('player-vol-btn');
       var volSlider = document.getElementById('player-vol-slider');
@@ -664,7 +664,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
         volSlider.classList.add('hidden');
       }
 
-      /* 单击静音/恢复 */
+      /* Click to mute / unmute */
       volBtn.onclick = function(e) {
         e.stopPropagation();
         if (audio.volume > 0) { lastVol = audio.volume; audio.volume = 0; }
@@ -672,13 +672,13 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
         updateVolUI(audio.volume);
       };
 
-      /* 悬停展开（桌面端） */
+      /* Expand on hover (desktop) */
       volBtn.onmouseenter = function() { clearTimeout(hideTimer); showVolSlider(); };
       volSlider.onmouseenter = function() { clearTimeout(hideTimer); };
       volSlider.onmouseleave = function() { hideTimer = setTimeout(hideVolSlider, 500); };
       volBtn.onmouseleave = function() { hideTimer = setTimeout(hideVolSlider, 500); };
 
-      /* 拖动/点击调音量 */
+      /* Drag / click to set volume */
       function setVolFromEvent(e) {
         var rect = volTrack.getBoundingClientRect();
         var y = (e.touches ? e.touches[0].clientY : e.clientY);
@@ -695,12 +695,12 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       volTrack.addEventListener('touchstart', function(e) { draggingVol = true; setVolFromEvent(e); e.preventDefault(); e.stopPropagation(); }, { passive: false });
       document.addEventListener('touchmove', function(e) { if (draggingVol) { setVolFromEvent(e); e.preventDefault(); } }, { passive: false });
       document.addEventListener('touchend', function() { draggingVol = false; });
-      /* 整个音量滑块区域阻止拖动冒泡 */
+      /* Stop drag events from bubbling out of the whole volume slider area */
       volSlider.addEventListener('mousedown', function(e) { e.stopPropagation(); });
       volSlider.addEventListener('touchstart', function(e) { e.stopPropagation(); }, { passive: false });
     })();
 
-    /* 事件绑定 */
+    /* Event bindings */
     el.toggle.onclick = function() { isPlaying ? pause() : play(); };
     el.coverWrap.onclick = function() { isPlaying ? pause() : play(); };
     el.next.onclick = nextTrackByMode;
@@ -708,7 +708,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
     audio.onended = nextTrackByMode;
     audio.onerror = function() { nextTrackByMode(); };
 
-    /* 进度条 + 歌词同步 */
+    /* Progress bar + lyric sync */
     audio.ontimeupdate = function() {
       if (!audio.duration) return;
       var pct = (audio.currentTime / audio.duration) * 100;
@@ -726,7 +726,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       audio.currentTime = pct * audio.duration;
     };
 
-    /* 收起/展开 */
+    /* Collapse / expand */
     el.minimize.onclick = function() {
       el.full.classList.add('hidden');
       el.list.classList.add('hidden');
@@ -734,7 +734,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       el.mini.classList.remove('hidden');
       el.mini.classList.add('flex');
     };
-    /* 迷你模式：单击暂停/播放，长按展开 */
+    /* Mini mode: tap to pause/play, long-press to expand */
     var miniPressTimer = null;
     var miniLongPressed = false;
 
@@ -749,7 +749,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       miniLongPressed = false;
       miniPressTimer = setTimeout(function() {
         miniLongPressed = true;
-        /* 长按：展开播放器 */
+        /* Long-press: expand the player */
         el.mini.classList.add('hidden');
         el.mini.classList.remove('flex');
         el.full.classList.remove('hidden');
@@ -760,7 +760,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       clearTimeout(miniPressTimer);
       if (!miniLongPressed) {
         e.preventDefault();
-        /* 短按：暂停/播放 */
+        /* Short press: pause / play */
         var indicator = document.getElementById('mini-pause-indicator');
         if (isPlaying) {
           pause();
@@ -776,14 +776,14 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       clearTimeout(miniPressTimer);
     }
 
-    /* 播放列表 */
+    /* Playlist */
     function buildList() {
       el.listItems.innerHTML = '';
       playlist.forEach(function(t, i) {
         var hasLrc = !!lyrics[t.name];
         var item = document.createElement('div');
         item.className = 'pl-item flex items-center gap-3 px-4 py-2.5 cursor-pointer text-sm hover:bg-primary/5 transition-colors ' + (i === currentIdx ? 'active text-primary font-bold' : 'text-gray-700');
-        item.innerHTML = '<span class="w-5 text-[10px] text-gray-400 text-center">' + (i+1) + '</span><div class="min-w-0 flex-1"><div class="truncate text-xs">' + t.name + '</div><div class="truncate text-[10px] text-gray-400">' + t.artist + '</div></div>' + (hasLrc ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary flex-shrink-0">词</span>' : '');
+        item.innerHTML = '<span class="w-5 text-[10px] text-gray-400 text-center">' + (i+1) + '</span><div class="min-w-0 flex-1"><div class="truncate text-xs">' + t.name + '</div><div class="truncate text-[10px] text-gray-400">' + t.artist + '</div></div>' + (hasLrc ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary flex-shrink-0">L</span>' : '');
         item.onclick = function() { loadTrack(i); play(); };
         el.listItems.appendChild(item);
       });
@@ -803,13 +803,13 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
         el.subtitle.style.display = 'none';
       } else {
         el.list.classList.add('hidden');
-        /* 恢复字幕条（如果当前歌曲有歌词） */
+        /* Restore the subtitle bar (if the current track has lyrics) */
         var hasLrc = !!lyrics[playlist[currentIdx].name];
         if (hasLrc) el.subtitle.style.display = '';
       }
     };
 
-    /* ===== 拖动功能（transform 实现，GPU 加速，跟手） ===== */
+    /* ===== Drag feature (transform-based, GPU-accelerated, responsive) ===== */
     (function initDrag() {
       var isDragging = false;
       var startX, startY, offsetX, offsetY;
@@ -819,14 +819,14 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       var rafId = null;
 
       function onStart(e) {
-        /* 可滚动区域（播放列表、歌词面板、音量滑块）不触发拖拽 */
+        /* Scrollable areas (playlist, lyric panel, volume slider) do not start a drag */
         var target = e.target;
         while (target && target !== el.player) {
           if (target.id === 'player-list-items' || target.id === 'player-lyric-content' ||
               target.id === 'player-list' || target.id === 'player-lyric-panel' ||
               target.id === 'vol-track' || target.id === 'player-progress-wrap' ||
               target.classList.contains('overflow-y-auto')) {
-            return; /* 不启动拖拽，让原生滚动生效 */
+            return; /* Don't start a drag; let native scrolling take over */
           }
           target = target.parentElement;
         }
@@ -840,7 +840,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
         dragMoved = false;
         isDragging = true;
 
-        /* 首次拖动：将 bottom/right 转换为固定 left/top + transform */
+        /* First drag: convert bottom/right into fixed left/top + transform */
         if (el.player.style.bottom !== 'auto') {
           el.player.style.left = rect.left + 'px';
           el.player.style.top = rect.top + 'px';
@@ -853,7 +853,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
         el.player.style.transition = 'none';
 
         document.body.classList.add('dragging-player');
-        /* 不在 touchstart 阶段 preventDefault，否则会阻止按钮点击 */
+        /* Don't preventDefault during touchstart, or button taps would be blocked */
         if (!e.touches) e.preventDefault();
       }
 
@@ -864,7 +864,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
         var dy = ev.clientY - startY;
         if (!dragMoved && Math.abs(dx) < DRAG_THRESHOLD && Math.abs(dy) < DRAG_THRESHOLD) return;
         dragMoved = true;
-        /* 只在真正拖动时才阻止滚动 */
+        /* Only block scrolling once an actual drag has started */
         if (e.cancelable) e.preventDefault();
 
         var baseLeft = parseFloat(el.player.style.left) || 0;
@@ -889,7 +889,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
         isDragging = false;
         if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
 
-        /* 将 transform 偏移量合并回 left/top */
+        /* Merge the transform offset back into left/top */
         var curLeft = (parseFloat(el.player.style.left) || 0) + tx;
         var curTop = (parseFloat(el.player.style.top) || 0) + ty;
         el.player.style.left = curLeft + 'px';
@@ -916,7 +916,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       document.addEventListener('touchend', onEnd);
     })();
 
-    /* 初始化 */
+    /* Initialize */
     if (playlist.length > 0) {
       loadTrack(Math.floor(Math.random() * playlist.length));
     } else {
@@ -924,7 +924,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
     }
     buildList();
 
-    /* ===== 显示播放器 + 自动播放（分离关注点） ===== */
+    /* ===== Show the player + autoplay (separated concerns) ===== */
     var shown = false;
     function showPlayer() {
       if (shown) return;
@@ -932,7 +932,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       el.player.classList.remove('opacity-0','translate-y-8','pointer-events-none');
     }
 
-    /* 任何交互都显示播放器（scroll/wheel/click/touch 均可） */
+    /* Any interaction reveals the player (scroll / wheel / click / touch) */
     function onShow() {
       showPlayer();
       ['click','touchstart','scroll','wheel','touchmove'].forEach(function(e) {
@@ -943,8 +943,8 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       document.addEventListener(e, onShow, { passive: true });
     });
 
-    /* 手机端不自动播放，只显示播放器让用户手动点播放按钮 */
-    /* 桌面端保留首次点击自动播放 */
+    /* Mobile: no autoplay; just show the player and let the user tap play */
+    /* Desktop: keep autoplay on the first click */
     var isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
 
     if (!isMobile) {
@@ -963,7 +963,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       }, true);
     }
 
-    /* ===== 视频播放时暂停 BGM / 页面不可见时暂停 ===== */
+    /* ===== Pause BGM while a video plays / pause when the page is hidden ===== */
     var pausedByVideo = false;
     var pausedByVisibility = false;
 
@@ -974,7 +974,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       if (pausedByVideo) { pausedByVideo = false; play(); }
     });
 
-    /* 页面切换到后台时暂停 */
+    /* Pause when the page goes to the background */
     document.addEventListener('visibilitychange', function() {
       if (document.hidden && isPlaying) {
         pause(); pausedByVisibility = true;
@@ -983,7 +983,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       }
     });
 
-    /* 监听页面内所有 video/audio 元素（非播放器自身） */
+    /* Watch every video/audio element on the page (except the player itself) */
     function watchMediaElements() {
       document.querySelectorAll('video, audio').forEach(function(media) {
         if (media._bgmWatched || media === audio) return;
@@ -999,12 +999,12 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
         });
       });
     }
-    /* 定期检查新添加的媒体元素 */
+    /* Periodically check for newly added media elements */
     var mediaObserver = new MutationObserver(function() { watchMediaElements(); });
     mediaObserver.observe(document.body, { childList: true, subtree: true });
     watchMediaElements();
 
-    /* 暴露播放器 API 供外部使用 */
+    /* Expose the player API for external use */
     window._musicAPI = {
       play: play,
       pause: pause,
@@ -1014,7 +1014,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       isPlaying: function() { return isPlaying; }
     };
 
-    /* ===== MediaSession API（系统媒体控制 + 键盘媒体键支持） ===== */
+    /* ===== MediaSession API (system media controls + keyboard media keys) ===== */
     if ('mediaSession' in navigator) {
       navigator.mediaSession.setActionHandler('play', function() { play(); });
       navigator.mediaSession.setActionHandler('pause', function() { pause(); });
@@ -1024,7 +1024,7 @@ const playlistData = JSON.stringify({ instrumental, vocal, lyrics });
       navigator.mediaSession.setActionHandler('nexttrack', function() { nextTrackByMode(); });
     }
 
-    /* 页面导航时清理自定义背景（非文章页） */
+    /* Clear the custom background on navigation (non-article pages) */
     document.addEventListener('astro:before-swap', function() {
       var bg = document.getElementById('post-custom-bg');
       if (bg) bg.style.opacity = '0';

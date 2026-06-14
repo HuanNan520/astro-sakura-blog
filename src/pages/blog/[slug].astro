@@ -15,21 +15,21 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content, headings } = await render(post);
 
-/* 获取所有文章并按日期排序，用于上一篇/下一篇导航 */
+/* Get all posts sorted by date, for prev/next navigation */
 const allPosts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const currentIndex = allPosts.findIndex(p => p.id === post.id);
 const prevPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
 const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
 
-/* 计算阅读时间：中文阅读速度约 400 字/分钟 */
+/* Estimate reading time (~400 characters per minute) */
 const rawText = post.body || '';
 const charCount = rawText.replace(/\s+/g, '').length;
 const readingTime = Math.max(1, Math.ceil(charCount / 400));
 
-/* 过滤 h2 和 h3 标题用于目录 */
+/* Keep only h2 and h3 headings for the table of contents */
 const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 
-/* 系列文章导航 */
+/* Series navigation */
 const seriesName = post.data.series;
 const seriesOrder = post.data.seriesOrder;
 const seriesPosts = seriesName
@@ -39,7 +39,7 @@ const seriesPrev = seriesOrder && seriesOrder > 1 ? seriesPosts.find(p => p.data
 const seriesNext = seriesOrder ? seriesPosts.find(p => p.data.seriesOrder === seriesOrder + 1) : null;
 const guidePost = seriesPosts.find(p => p.data.seriesOrder === 0);
 
-/* 相关文章推荐（基于共同标签，排除当前文章和同系列文章） */
+/* Related posts (by shared tags, excluding the current post and same-series posts) */
 const currentTags = post.data.tags || [];
 const relatedPosts = currentTags.length > 0
   ? allPosts
@@ -85,20 +85,20 @@ const breadcrumbSchema = {
 <Base title={post.data.title} description={post.data.summary || ''} image={post.data.cover?.src || '/images/covers/hero.webp'}>
   <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
-  {/* 传递文章 BGM 和自定义背景给播放器 */}
+  {/* Pass the post's BGM and custom background to the player */}
   <div id="post-bgm-data" data-bgm={post.data.bgm || ''} data-background={post.data.background || ''} class="hidden"></div>
-  <!-- 文章详情页：三栏布局 -->
+  <!-- Article detail page: three-column layout -->
   <div class="max-w-[1400px] mx-auto px-4 md:px-8 py-20 flex justify-center gap-8">
-    <!-- 左侧占位（保持正文居中） -->
+    <!-- Left spacer (keeps the body centered) -->
     <div class="hidden xl:block w-[200px] flex-shrink-0"></div>
 
-    <!-- 中间：正文区域 -->
+    <!-- Center: body area -->
     <article class="w-full max-w-3xl min-w-0">
-      <!-- 面包屑导航 -->
-      <nav class="flex items-center gap-1.5 text-xs text-muted/60 dark:text-gray-500 mb-6 flex-wrap" aria-label="面包屑">
-        <a href="/" class="hover:text-primary dark:hover:text-primary-light transition-colors">首页</a>
+      <!-- Breadcrumb navigation -->
+      <nav class="flex items-center gap-1.5 text-xs text-muted/60 dark:text-gray-500 mb-6 flex-wrap" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-primary dark:hover:text-primary-light transition-colors">Home</a>
         <span>/</span>
-        <a href="/blog" class="hover:text-primary dark:hover:text-primary-light transition-colors">博客</a>
+        <a href="/blog" class="hover:text-primary dark:hover:text-primary-light transition-colors">Blog</a>
         {seriesName && (
           <>
             <span>/</span>
@@ -109,7 +109,7 @@ const breadcrumbSchema = {
         <span class="text-gray-700 dark:text-gray-300 truncate max-w-[200px]">{post.data.title}</span>
       </nav>
 
-      <!-- 封面大图（如果有） -->
+      <!-- Cover image (if any) -->
       {post.data.cover && (
         <div class="relative mb-10 -mx-2 md:-mx-4 lg:-mx-8 overflow-hidden rounded-2xl">
           <Image
@@ -120,7 +120,7 @@ const breadcrumbSchema = {
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 700px"
             format="webp"
           />
-          <!-- 底部渐变遮罩 -->
+          <!-- Bottom gradient overlay -->
           <div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-surface dark:from-surface-dark to-transparent rounded-b-2xl"></div>
         </div>
       )}
@@ -151,7 +151,7 @@ const breadcrumbSchema = {
 })();
 </script>
 
-      <!-- 文章头部 -->
+      <!-- Article header -->
       <div class="mb-12">
         <div class="flex gap-2 mb-4 flex-wrap">
           {post.data.tags?.map(tag => (
@@ -160,17 +160,17 @@ const breadcrumbSchema = {
         </div>
         <h1 class="text-3xl md:text-4xl font-headline text-gray-800 dark:text-gray-100 leading-snug mb-4">{post.data.title}</h1>
         <div class="flex items-center gap-4 text-xs text-muted/60 dark:text-gray-500">
-          <span>{post.data.date.toLocaleDateString('zh-CN')}</span>
+          <span>{post.data.date.toLocaleDateString('en-US')}</span>
           <span>&middot;</span>
           <span>{siteConfig.author.name}</span>
           <span>&middot;</span>
-          <!-- 阅读时间估算 -->
+          <!-- Reading time estimate -->
           <span class="inline-flex items-center gap-1">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="10" />
               <polyline points="12 6 12 12 16 14" />
             </svg>
-            约 {readingTime} 分钟
+            {readingTime} min read
           </span>
           <span>&middot;</span>
           <span class="inline-flex items-center gap-1">
@@ -178,7 +178,7 @@ const breadcrumbSchema = {
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
               <circle cx="12" cy="12" r="3" />
             </svg>
-            <span class="waline-pageview-count" data-path={`/blog/${post.id}/`}>-</span> 次阅读
+            <span class="waline-pageview-count" data-path={`/blog/${post.id}/`}>-</span> views
           </span>
         </div>
         <script is:inline define:vars={{ walineServerURL: siteConfig.comments.serverURL }}>
@@ -201,7 +201,7 @@ const breadcrumbSchema = {
           document.addEventListener('astro:page-load', initPageview);
         </script>
 
-        {/* 系列文章导航条 */}
+        {/* Series navigation bar */}
         {seriesName && seriesPosts.length > 1 && (
           <SeriesNav
             seriesName={seriesName}
@@ -214,78 +214,78 @@ const breadcrumbSchema = {
         )}
       </div>
 
-      <!-- 文章内容 -->
+      <!-- Article content -->
       <div class="prose">
         <Content />
       </div>
 
-      <!-- 分享按钮 -->
+      <!-- Share buttons -->
       <div class="mt-12 pt-6 border-t border-border/30 dark:border-gray-700">
-        <p class="text-sm text-muted dark:text-gray-500 mb-4 font-headline">分享这篇文章</p>
+        <p class="text-sm text-muted dark:text-gray-500 mb-4 font-headline">Share this post</p>
         <div class="flex items-center gap-3">
-          <!-- 复制链接 -->
+          <!-- Copy link -->
           <button
             id="copy-link-btn"
             class="share-btn inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-card-dark text-sm text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light hover:shadow-md transition-all duration-300 cursor-pointer"
-            title="复制链接"
+            title="Copy link"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
               <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
             </svg>
-            <span id="copy-link-text">复制链接</span>
+            <span id="copy-link-text">Copy link</span>
           </button>
 
-          <!-- 分享到微博 -->
+          <!-- Share to Weibo -->
           <a
             id="share-weibo"
             href="#"
             target="_blank"
             rel="noopener noreferrer"
             class="share-btn inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-card-dark text-sm text-gray-700 dark:text-gray-300 hover:text-[#e6162d] hover:shadow-md transition-all duration-300"
-            title="分享到微博"
+            title="Share to Weibo"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
               <path d="M10.098 20c-4.612 0-8.599-2.096-8.599-5.62 0-1.85.96-3.99 2.606-6.03 2.19-2.72 4.738-4.181 5.688-3.264.426.41.387 1.206-.05 2.206-.18.414-.07.494.25.363 1.217-.503 2.263-.628 2.825-.164.303.25.42.649.378 1.11 3.473-.644 6.667.486 7.314 2.834.36 1.303-.136 2.843-1.192 4.17-1.637 2.06-4.946 4.395-9.22 4.395zM6.932 11.482c-2.147.344-3.77 2.16-3.624 4.054.145 1.893 2.004 3.183 4.151 2.838 2.147-.344 3.77-2.16 3.624-4.054-.145-1.893-2.004-3.183-4.151-2.838zm3.452 4.024c-.488.753-1.57 1.092-2.403.753-.82-.332-1.069-1.218-.582-1.96.48-.73 1.53-1.065 2.36-.755.837.314 1.104 1.2.625 1.962zm1.242-1.735c-.18.283-.58.393-.893.247-.308-.148-.404-.504-.227-.783.18-.278.573-.39.882-.249.31.144.416.5.238.785zM17.454 8.693c-.435-.12-.673-.578-.53-1.024.14-.446.59-.703 1.026-.582 1.87.52 2.808 1.903 2.547 3.493-.032.193-.143.333-.295.41-.105.054-.224.07-.34.044-.27-.06-.443-.333-.387-.608.155-.95-.333-1.77-1.368-2.127l-.653.394zm-.002-3.291c-.435-.12-.674-.577-.532-1.024.14-.446.59-.703 1.027-.582 3.22.896 4.85 3.248 4.41 5.94-.054.332-.368.557-.697.502-.33-.055-.553-.37-.5-.702.325-1.997-1.016-3.786-3.055-4.528l-.653.394z" />
             </svg>
-            微博
+            Weibo
           </a>
 
-          <!-- 分享到 X -->
+          <!-- Share to X -->
           <a
             id="share-twitter"
             href="#"
             target="_blank"
             rel="noopener noreferrer"
             class="share-btn inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-card-dark text-sm text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white hover:shadow-md transition-all duration-300"
-            title="分享到 X"
+            title="Share to X"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
             </svg>
-            推特
+            X
           </a>
         </div>
       </div>
 
-      {/* 底部系列导航 */}
+      {/* Bottom series navigation */}
       {seriesName && seriesPosts.length > 1 && (
         <div class="mt-12 pt-6 border-t border-border/30 dark:border-gray-700">
           <div class="flex items-center justify-between gap-4">
             {seriesPrev ? (
               <a href={`/blog/${seriesPrev.id}`} class="flex-1 min-w-0 group">
-                <span class="text-[10px] text-muted/50 dark:text-gray-500">← 上一章</span>
+                <span class="text-[10px] text-muted/50 dark:text-gray-500">← Previous chapter</span>
                 <span class="text-sm text-gray-800 dark:text-gray-100 group-hover:text-primary dark:group-hover:text-primary-light transition-colors block truncate mt-0.5">{seriesPrev.data.title}</span>
               </a>
             ) : <div class="flex-1" />}
             {guidePost && (
               <a href={`/blog/${guidePost.id}`} class="flex-shrink-0 px-3 py-1.5 text-xs text-primary dark:text-primary-light bg-primary/5 dark:bg-primary-light/5 rounded-lg hover:bg-primary/10 dark:hover:bg-primary-light/10 transition-colors">
-                目录
+                Contents
               </a>
             )}
             {seriesNext ? (
               <a href={`/blog/${seriesNext.id}`} class="flex-1 min-w-0 text-right group">
-                <span class="text-[10px] text-muted/50 dark:text-gray-500">下一章 →</span>
+                <span class="text-[10px] text-muted/50 dark:text-gray-500">Next chapter →</span>
                 <span class="text-sm text-gray-800 dark:text-gray-100 group-hover:text-primary dark:group-hover:text-primary-light transition-colors block truncate mt-0.5">{seriesNext.data.title}</span>
               </a>
             ) : <div class="flex-1" />}
@@ -293,15 +293,15 @@ const breadcrumbSchema = {
         </div>
       )}
 
-      <!-- Related Posts / 系列文章列表 -->
+      <!-- Related Posts / series article list -->
       {seriesOrder === 0 && seriesPosts.length > 1 ? (
         <section id="series-articles" class="mt-12 pt-6 border-t border-border/30 dark:border-gray-700">
-          <p class="text-sm text-muted dark:text-gray-500 mb-4 font-headline">系列文章</p>
+          <p class="text-sm text-muted dark:text-gray-500 mb-4 font-headline">Series articles</p>
           <div class="flex flex-col gap-3">
             {seriesPosts.filter(sp => (sp.data.seriesOrder || 0) > 0).map(sp => (
               <a href={`/blog/${sp.id}/`} class="group flex items-center gap-4 p-4 bg-white dark:bg-card-dark rounded-xl border-l-4 border-primary/30 hover:border-primary dark:border-primary-light/30 dark:hover:border-primary-light shadow-sm hover:shadow-md transition-all duration-300">
                 <div class="flex-1 min-w-0">
-                  <span class="text-[10px] font-medium text-primary dark:text-primary-light">第 {sp.data.seriesOrder} 篇</span>
+                  <span class="text-[10px] font-medium text-primary dark:text-primary-light">Part {sp.data.seriesOrder}</span>
                   <h4 class="text-sm font-headline text-gray-800 dark:text-gray-100 leading-snug group-hover:text-primary dark:group-hover:text-primary-light transition-colors mt-0.5">{sp.data.title}</h4>
                   {sp.data.summary && <p class="text-xs text-muted/60 dark:text-gray-500 mt-1 line-clamp-2">{sp.data.summary}</p>}
                 </div>
@@ -312,7 +312,7 @@ const breadcrumbSchema = {
         </section>
       ) : relatedPosts.length > 0 && (
         <div class="mt-12 pt-6 border-t border-border/30 dark:border-gray-700">
-          <p class="text-sm text-muted dark:text-gray-500 mb-4 font-headline">你可能还想看</p>
+          <p class="text-sm text-muted dark:text-gray-500 mb-4 font-headline">You might also like</p>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {relatedPosts.map(rp => (
               <a href={`/blog/${rp.id}`} class="group bg-white dark:bg-card-dark rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
@@ -323,7 +323,7 @@ const breadcrumbSchema = {
                 )}
                 <div class="p-3">
                   <h4 class="text-sm font-headline text-gray-800 dark:text-gray-100 leading-snug line-clamp-2 group-hover:text-primary dark:group-hover:text-primary-light transition-colors">{rp.data.title}</h4>
-                  <span class="text-[10px] text-muted/50 dark:text-gray-500 mt-1 block">{rp.data.date.toLocaleDateString('zh-CN')}</span>
+                  <span class="text-[10px] text-muted/50 dark:text-gray-500 mt-1 block">{rp.data.date.toLocaleDateString('en-US')}</span>
                 </div>
               </a>
             ))}
@@ -331,17 +331,17 @@ const breadcrumbSchema = {
         </div>
       )}
 
-      <!-- 评论区 -->
-      
+      <!-- Comments -->
 
-      <!-- 上一篇 / 下一篇导航 -->
+
+      <!-- Previous / next post navigation -->
       <div class="mt-10 pt-8 border-t border-border/30 dark:border-gray-700">
         <div class="flex flex-col md:flex-row justify-between gap-4">
           {prevPost ? (
             <a href={`/blog/${prevPost.id}`} class="group flex-1 flex items-center gap-3 p-4 bg-white dark:bg-card-dark rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
               <svg class="w-5 h-5 text-primary dark:text-primary-light flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
               <div class="min-w-0">
-                <span class="text-[10px] text-muted dark:text-gray-500 block">上一篇</span>
+                <span class="text-[10px] text-muted dark:text-gray-500 block">Previous</span>
                 <span class="text-sm font-headline text-gray-800 dark:text-gray-100 group-hover:text-primary dark:group-hover:text-primary-light transition-colors truncate block">{prevPost.data.title}</span>
               </div>
             </a>
@@ -350,7 +350,7 @@ const breadcrumbSchema = {
           {nextPost ? (
             <a href={`/blog/${nextPost.id}`} class="group flex-1 flex items-center justify-end gap-3 p-4 bg-white dark:bg-card-dark rounded-xl shadow-sm hover:shadow-md transition-all duration-300 text-right">
               <div class="min-w-0">
-                <span class="text-[10px] text-muted dark:text-gray-500 block">下一篇</span>
+                <span class="text-[10px] text-muted dark:text-gray-500 block">Next</span>
                 <span class="text-sm font-headline text-gray-800 dark:text-gray-100 group-hover:text-primary dark:group-hover:text-primary-light transition-colors truncate block">{nextPost.data.title}</span>
               </div>
               <svg class="w-5 h-5 text-primary dark:text-primary-light flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
@@ -358,19 +358,19 @@ const breadcrumbSchema = {
           ) : <div class="flex-1"></div>}
         </div>
 
-        <!-- 返回文章列表 -->
+        <!-- Back to post list -->
         <div class="mt-6 text-center">
           <a href="/blog" class="text-primary dark:text-primary-light hover:underline inline-flex items-center gap-2 text-sm">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-            返回文章列表
+            Back to post list
           </a>
         </div>
       </div>
-      <!-- 评论区 -->
+      <!-- Comments -->
       <WalineComment path={`/blog/${post.id}/`} />
     </article>
 
-    <!-- 右侧：文章目录（桌面端显示） -->
+    <!-- Right: table of contents (shown on desktop) -->
     {tocHeadings.length > 0 && (
       <aside class="hidden xl:block w-[220px] flex-shrink-0">
         <nav id="toc-nav" class="sticky top-[100px]">
@@ -383,7 +383,7 @@ const breadcrumbSchema = {
               <line x1="3" y1="12" x2="3.01" y2="12" />
               <line x1="3" y1="18" x2="3.01" y2="18" />
             </svg>
-            目录
+            Contents
           </p>
           <ul class="toc-list flex flex-col gap-1 border-l-2 border-primary/10 dark:border-primary-light/10">
             {tocHeadings.map(h => (
@@ -405,13 +405,13 @@ const breadcrumbSchema = {
       </aside>
     )}
 
-    <!-- 手机端 TOC：浮动按钮 + 滑出面板 -->
+    <!-- Mobile TOC: floating button + slide-out panel -->
     {tocHeadings.length > 0 && (
       <div class="xl:hidden">
         <button
           id="mobile-toc-btn"
           class="fixed bottom-[140px] md:bottom-20 right-4 z-30 w-11 h-11 rounded-full bg-white/90 dark:bg-card-dark/90 shadow-lg border border-black/5 dark:border-white/10 flex items-center justify-center cursor-pointer backdrop-blur-sm"
-          aria-label="文章目录"
+          aria-label="Table of contents"
         >
           <svg class="w-5 h-5 text-primary dark:text-primary-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="8" y1="6" x2="21" y2="6" />
@@ -425,8 +425,8 @@ const breadcrumbSchema = {
         <div id="mobile-toc-overlay" class="fixed inset-0 z-[60] bg-black/40 hidden opacity-0 transition-opacity duration-300"></div>
         <div id="mobile-toc-panel" class="fixed bottom-0 left-0 right-0 z-[61] bg-white dark:bg-[#0f0e17] rounded-t-2xl shadow-2xl translate-y-full transition-transform duration-300 max-h-[60vh] overflow-hidden">
           <div class="flex items-center justify-between px-5 py-4 border-b border-black/5 dark:border-white/5">
-            <span class="text-sm font-headline text-gray-800 dark:text-gray-100">目录</span>
-            <button id="mobile-toc-close" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xs cursor-pointer">关闭</button>
+            <span class="text-sm font-headline text-gray-800 dark:text-gray-100">Contents</span>
+            <button id="mobile-toc-close" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xs cursor-pointer">Close</button>
           </div>
           <div class="overflow-y-auto max-h-[calc(60vh-56px)] px-5 py-3">
             <ul class="flex flex-col gap-1">
@@ -451,7 +451,7 @@ const breadcrumbSchema = {
     )}
   </div>
 
-  <!-- 分享按钮脚本 -->
+  <!-- Share buttons script -->
   <script is:inline>
     (function() {
       function initShare() {
@@ -474,10 +474,10 @@ const breadcrumbSchema = {
           copyBtn._bound = true;
           copyBtn.addEventListener('click', function() {
             navigator.clipboard.writeText(window.location.href).then(function() {
-              copyText.textContent = '已复制!';
+              copyText.textContent = 'Copied!';
               copyBtn.style.background = 'rgba(74,222,128,0.15)';
               setTimeout(function() { copyBtn.style.background = ''; }, 1500);
-              setTimeout(function() { copyText.textContent = '复制链接'; }, 2000);
+              setTimeout(function() { copyText.textContent = 'Copy link'; }, 2000);
             }).catch(function() {
               var input = document.createElement('input');
               input.value = window.location.href;
@@ -486,10 +486,10 @@ const breadcrumbSchema = {
               input.select();
               document.execCommand('copy');
               document.body.removeChild(input);
-              copyText.textContent = '已复制!';
+              copyText.textContent = 'Copied!';
               copyBtn.style.background = 'rgba(74,222,128,0.15)';
               setTimeout(function() { copyBtn.style.background = ''; }, 1500);
-              setTimeout(function() { copyText.textContent = '复制链接'; }, 2000);
+              setTimeout(function() { copyText.textContent = 'Copy link'; }, 2000);
             });
           });
         }
@@ -499,7 +499,7 @@ const breadcrumbSchema = {
     })();
   </script>
 
-  <!-- 文章定制 BGM + 背景 -->
+  <!-- Per-post custom BGM + background -->
   <script is:inline>
     (function() {
       function initPostBgm() {
@@ -508,7 +508,7 @@ const breadcrumbSchema = {
         var bgmName = data.dataset.bgm;
         var bgImg = data.dataset.background;
 
-        /* 切换播放器到指定曲目 */
+        /* Switch the player to the specified track */
         if (bgmName && window._musicAPI) {
           var pl = window._musicAPI.getPlaylist();
           for (var i = 0; i < pl.length; i++) {
@@ -520,7 +520,7 @@ const breadcrumbSchema = {
           }
         }
 
-        /* 自定义背景 */
+        /* Custom background */
         var bgEl = document.getElementById('post-custom-bg');
         if (bgImg) {
           if (!bgEl) {
@@ -536,7 +536,7 @@ const breadcrumbSchema = {
         }
       }
 
-      /* 延迟等播放器初始化完成 */
+      /* Wait for the player to finish initializing */
       if (window._musicAPI) {
         initPostBgm();
       } else {
@@ -549,14 +549,14 @@ const breadcrumbSchema = {
         setTimeout(function() { clearInterval(checkInterval); }, 5000);
       }
 
-      /* View Transitions 导航后重新初始化 */
+      /* Re-initialize after View Transitions navigation */
       document.addEventListener('astro:page-load', function() {
         setTimeout(initPostBgm, 300);
       });
     })();
   </script>
 
-  <!-- 手机端 TOC 交互脚本 -->
+  <!-- Mobile TOC interaction script -->
   <script is:inline>
     (function() {
       function initMobileToc() {
@@ -602,7 +602,7 @@ const breadcrumbSchema = {
     })();
   </script>
 
-  <!-- 目录高亮脚本：监听滚动，高亮当前阅读到的标题 -->
+  <!-- TOC highlight script: watch scrolling and highlight the heading currently in view -->
   <script is:inline>
     (function() {
       var scrollHandler = null;
@@ -635,7 +635,7 @@ const breadcrumbSchema = {
           }
         }
 
-        /* 移除旧的滚动监听器，防止导航后重复绑定 */
+        /* Remove the old scroll listener to avoid duplicate bindings after navigation */
         if (scrollHandler) window.removeEventListener('scroll', scrollHandler);
         scrollHandler = updateToc;
         window.addEventListener('scroll', updateToc, { passive: true });
@@ -647,7 +647,7 @@ const breadcrumbSchema = {
     })();
   </script>
 
-  <!-- 阅读进度记忆：保存/恢复滚动位置 -->
+  <!-- Reading position memory: save / restore scroll position -->
   <script is:inline>
     (function() {
       var STORAGE_PREFIX = 'reading-pos-';
@@ -663,7 +663,7 @@ const breadcrumbSchema = {
         return STORAGE_PREFIX + window.location.pathname;
       }
 
-      /* 清理旧条目，只保留最近 MAX_ENTRIES 条 */
+      /* Clean up old entries, keeping only the most recent MAX_ENTRIES */
       function cleanupOldEntries() {
         try {
           var entries = [];
@@ -688,7 +688,7 @@ const breadcrumbSchema = {
         } catch(e) {}
       }
 
-      /* 保存当前滚动位置 */
+      /* Save the current scroll position */
       function savePosition() {
         try {
           var pos = window.scrollY || window.pageYOffset;
@@ -696,10 +696,10 @@ const breadcrumbSchema = {
         } catch(e) {}
       }
 
-      /* 显示恢复提示 toast */
+      /* Show the "position restored" toast */
       function showToast() {
         var toast = document.createElement('div');
-        toast.textContent = '已恢复上次阅读位置';
+        toast.textContent = 'Restored your last reading position';
         toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);' +
           'background:rgba(0,0,0,0.72);color:#fff;font-size:13px;' +
           'padding:8px 20px;border-radius:20px;z-index:40;' +
@@ -707,11 +707,11 @@ const breadcrumbSchema = {
           'backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);' +
           'white-space:nowrap;font-family:inherit;';
         document.body.appendChild(toast);
-        /* 淡入 */
+        /* Fade in */
         requestAnimationFrame(function() {
           toast.style.opacity = '1';
         });
-        /* 淡出并移除 */
+        /* Fade out and remove */
         setTimeout(function() {
           toast.style.opacity = '0';
           setTimeout(function() {
@@ -720,7 +720,7 @@ const breadcrumbSchema = {
         }, TOAST_DURATION);
       }
 
-      /* 恢复滚动位置 */
+      /* Restore the scroll position */
       function restorePosition() {
         try {
           var raw = localStorage.getItem(getKey());
@@ -738,19 +738,19 @@ const breadcrumbSchema = {
       var scrollListener = null;
 
       function initReadingProgress() {
-        /* 移除旧的滚动监听器，防止 View Transitions 后重复绑定 */
+        /* Remove the old scroll listener to avoid duplicate bindings after View Transitions */
         if (scrollListener) {
           window.removeEventListener('scroll', scrollListener);
           scrollListener = null;
         }
 
-        /* 只在文章详情页生效 */
+        /* Only run on the article detail page */
         if (window.location.pathname.indexOf('/blog/') !== 0) return;
 
-        /* 恢复位置 */
+        /* Restore the position */
         restorePosition();
 
-        /* 节流保存滚动位置 */
+        /* Throttled saving of the scroll position */
         scrollListener = function() {
           if (throttleTimer) return;
           throttleTimer = setTimeout(function() {
@@ -760,7 +760,7 @@ const breadcrumbSchema = {
         };
         window.addEventListener('scroll', scrollListener, { passive: true });
 
-        /* 清理旧条目 */
+        /* Clean up old entries */
         cleanupOldEntries();
       }
 
@@ -785,7 +785,7 @@ const breadcrumbSchema = {
       if (rect.bottom < window.innerHeight + 100) {
         shown = true;
         var reward = document.createElement('div');
-        reward.innerHTML = '✨ 感谢阅读！';
+        reward.innerHTML = '✨ Thanks for reading!';
         reward.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:linear-gradient(135deg,#2b6579,#a0d8ef);color:#fff;font-size:14px;padding:10px 24px;border-radius:24px;z-index:40;opacity:0;transition:all 0.5s cubic-bezier(0.16,1,0.3,1);pointer-events:none;font-family:inherit;white-space:nowrap;box-shadow:0 8px 32px rgba(43,101,121,0.3);';
         document.body.appendChild(reward);
         requestAnimationFrame(function() {

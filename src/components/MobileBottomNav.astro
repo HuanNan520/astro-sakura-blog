@@ -13,7 +13,7 @@ const iconMap: Record<string, string> = {
   about: '<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>',
 };
 ---
-<!-- 手机端底部导航（SVG图标，不依赖字体加载） -->
+<!-- Mobile bottom navigation (SVG icons, no font-loading dependency) -->
 <nav class="md:hidden fixed bottom-0 w-full z-50 glass rounded-t-[2rem] shadow-2xl">
   <div class="flex justify-around items-center px-4 pb-[max(1.25rem,env(safe-area-inset-bottom,1.25rem))] pt-3">
     {siteConfig.nav.map(item => {
@@ -39,7 +39,7 @@ const iconMap: Record<string, string> = {
 <button
   id="mobile-search-fab"
   class="md:hidden fixed bottom-[72px] left-1/2 -translate-x-1/2 z-50 w-10 h-10 rounded-full bg-primary/90 text-white shadow-lg flex items-center justify-center"
-  aria-label="搜索"
+  aria-label="Search"
 >
   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />

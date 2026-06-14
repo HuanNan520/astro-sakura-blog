@@ -7,7 +7,7 @@ import heroImg from '../../assets/images/hero.webp';
 const posts = (await getCollection('blog')).filter(p => !p.data.hidden).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const PAGE_SIZE = 8;
 
-/* 计算每篇文章的预估阅读时间 */
+/* Estimate the reading time for each post */
 function getReadingTime(body: string): number {
   const charCount = (body || '').replace(/\s+/g, '').length;
   return Math.max(1, Math.ceil(charCount / 400));
@@ -22,14 +22,14 @@ posts.forEach(p => {
 });
 const seriesList = [...seriesMap.entries()].filter(([, posts]) => posts.length >= 2);
 ---
-<Base title="博客" description="All blog posts">
-  <!-- 装饰 banner 背景 -->
+<Base title="Blog" description="All blog posts">
+  <!-- Decorative banner background -->
   <div class="relative overflow-hidden h-64 md:h-72">
     <Image src={heroImg} alt="" class="absolute inset-0 w-full h-full object-cover !rounded-none blur-xl scale-110" aria-hidden="true" widths={[640, 1024]} sizes="100vw" />
     <div class="absolute inset-0 bg-surface/70 dark:bg-surface-dark/75"></div>
     <div class="relative z-10 flex flex-col justify-end h-full max-w-4xl mx-auto px-6 md:px-8 pb-10">
-      <h1 class="text-3xl md:text-4xl font-headline text-gray-800 dark:text-gray-100 mb-2">博客</h1>
-      <p class="text-muted dark:text-gray-400 text-sm">游戏策划笔记、开发日志、二次元碎碎念 · 共 {posts.length} 篇</p>
+      <h1 class="text-3xl md:text-4xl font-headline text-gray-800 dark:text-gray-100 mb-2">Blog</h1>
+      <p class="text-muted dark:text-gray-400 text-sm">Game design notes, dev logs, and anime musings · {posts.length} posts</p>
     </div>
   </div>
 
@@ -39,7 +39,7 @@ const seriesList = [...seriesMap.entries()].filter(([, posts]) => posts.length >
         {seriesList.map(([name, items]) => (
           <a href={`/blog/${items.sort((a,b) => (a.data.seriesOrder||0) - (b.data.seriesOrder||0))[0].id}`} class="flex-shrink-0 px-4 py-2 bg-white dark:bg-card-dark rounded-xl shadow-sm text-sm hover:shadow-md transition-all group">
             <span class="text-gray-800 dark:text-gray-100 font-headline group-hover:text-primary dark:group-hover:text-primary-light transition-colors">{name}</span>
-            <span class="text-[11px] text-muted/50 dark:text-gray-500 ml-2">{items.length} 篇</span>
+            <span class="text-[11px] text-muted/50 dark:text-gray-500 ml-2">{items.length} posts</span>
           </a>
         ))}
       </div>
@@ -67,14 +67,14 @@ const seriesList = [...seriesMap.entries()].filter(([, posts]) => posts.length >
             <h2 class="text-xl font-headline text-gray-800 dark:text-gray-100 mb-2 leading-snug group-hover:text-primary dark:group-hover:text-primary-light transition-colors">{post.data.title}</h2>
             <p class="text-sm text-muted dark:text-gray-400 mb-4 line-clamp-2">{post.data.summary}</p>
             <div class="flex items-center gap-3 text-xs text-muted/50 dark:text-gray-500">
-              <span>{post.data.date.toLocaleDateString('zh-CN')}</span>
+              <span>{post.data.date.toLocaleDateString('en-US')}</span>
               <span>&middot;</span>
               <span class="inline-flex items-center gap-1">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10" />
                   <polyline points="12 6 12 12 16 14" />
                 </svg>
-                约 {getReadingTime(post.body || '')} 分钟
+                {getReadingTime(post.body || '')} min read
               </span>
             </div>
           </div>
@@ -82,17 +82,17 @@ const seriesList = [...seriesMap.entries()].filter(([, posts]) => posts.length >
       ))}
     </div>
 
-    {/* 加载更多 + 计数 */}
+    {/* Load more + count */}
     {posts.length > PAGE_SIZE && (
       <div class="mt-12 text-center">
-        <p id="post-count" class="text-xs text-muted/50 dark:text-gray-500 mb-4">显示 {PAGE_SIZE} / {posts.length} 篇</p>
+        <p id="post-count" class="text-xs text-muted/50 dark:text-gray-500 mb-4">Showing {PAGE_SIZE} / {posts.length} posts</p>
         <button
           id="load-more-btn"
           class="px-8 py-3 bg-white dark:bg-card-dark rounded-xl text-sm text-gray-700 dark:text-gray-300 shadow-sm hover:shadow-md hover:text-primary dark:hover:text-primary-light transition-all cursor-pointer"
           data-total={posts.length}
           data-page-size={PAGE_SIZE}
         >
-          加载更多
+          Load more
         </button>
       </div>
     )}
@@ -120,16 +120,16 @@ const seriesList = [...seriesMap.entries()].filter(([, posts]) => posts.length >
           }
         }
         shown = next;
-        if (countEl) countEl.textContent = '显示 ' + shown + ' / ' + total + ' 篇';
+        if (countEl) countEl.textContent = 'Showing ' + shown + ' / ' + total + ' posts';
         if (shown >= total) {
           btn.style.display = 'none';
-          if (countEl) countEl.textContent = '共 ' + total + ' 篇';
+          if (countEl) countEl.textContent = total + ' posts in total';
         }
       }
 
       btn.addEventListener('click', loadMore);
 
-      /* 滚动到底部自动加载 */
+      /* Auto-load when scrolled to the bottom */
       var scrollHandler = null;
       scrollHandler = function() {
         if (shown >= total) { window.removeEventListener('scroll', scrollHandler); return; }

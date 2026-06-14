@@ -14,7 +14,7 @@ https://cdn.jsdelivr.net/gh/walinejs/emojis/tieba
 
 Thanks to tieba for designing emoticons.
 
-tieba 表情的版权归原作者所有，Waline 保留对该仓库的最终解释权。
+The copyright of the tieba emoticons belongs to their original authors. Waline reserves the right of final interpretation for this repository.
 
 ## License
 

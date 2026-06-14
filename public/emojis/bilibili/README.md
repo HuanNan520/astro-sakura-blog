@@ -16,7 +16,7 @@ Thanks to [@njit-guoxinyu](https://github.com/njit-guoxinyu) for the contributio
 
 Thanks to Bilibili for designing emoticons.
 
-Bilibili 表情的版权归原作者所有，Walinejs 保留对该仓库的最终解释权。
+The copyright of the Bilibili emoticons belongs to their original authors. Walinejs reserves the right of final interpretation for this repository.
 
 ## License
 

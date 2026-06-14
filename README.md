@@ -6,7 +6,7 @@
 
 A beautiful, feature-rich blog template built with Astro 6 and Tailwind CSS, featuring a cherry blossom aesthetic and a built-in music player.
 
-[**Live Demo**](https://huannan.top) | [**Chinese / 中文文档**](README.zh-CN.md)
+[**Live Demo**](https://huannan.top)
 
 ![Homepage](screenshots/homepage.png)
 

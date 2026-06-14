@@ -3,9 +3,9 @@
 import { siteConfig } from '../config';
 ---
 
-<!-- Loading Screen: 首次访问时显示 -->
+<!-- Loading Screen: shown on first visit -->
 <div id="loading-screen" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-surface dark:bg-surface-dark">
-  <!-- 樱花 Logo -->
+  <!-- Sakura logo -->
   <div class="sakura-logo">
     <svg
       viewBox="0 0 32 32"
@@ -20,7 +20,7 @@ import { siteConfig } from '../config';
           <stop offset="50%" stop-color="#FF8FA3" />
           <stop offset="100%" stop-color="#E75480" />
         </linearGradient>
-        <!-- 光晕滤镜 -->
+        <!-- Glow filter -->
         <filter id="sakura-glow">
           <feGaussianBlur stdDeviation="2" result="blur" />
           <feMerge>
@@ -40,21 +40,21 @@ import { siteConfig } from '../config';
         <circle cx="0" cy="0" r="3" fill="url(#sakura-grad)" opacity="0.4" />
       </g>
     </svg>
-    <!-- 脉冲光晕 -->
+    <!-- Pulsing glow -->
     <div class="sakura-pulse"></div>
   </div>
 
-  <!-- 进度条 -->
+  <!-- Progress bar -->
   <div class="sakura-bar">
     <div class="sakura-bar-fill"></div>
   </div>
 
-  <!-- 文字 -->
+  <!-- Text -->
   <p class="sakura-title font-headline">{siteConfig.loadingScreen.text}</p>
 </div>
 
 <style is:global>
-  /* ── 樱花容器 ── */
+  /* ── Sakura container ── */
   .sakura-logo {
     position: relative;
     display: flex;
@@ -63,19 +63,19 @@ import { siteConfig } from '../config';
     animation: sakura-spin 4s linear infinite, sakura-breathe 2.5s ease-in-out infinite;
   }
 
-  /* 旋转 */
+  /* Rotation */
   @keyframes sakura-spin {
     0%   { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
 
-  /* 缩放呼吸 */
+  /* Scale breathing */
   @keyframes sakura-breathe {
     0%, 100% { scale: 1; }
     50%      { scale: 1.08; }
   }
 
-  /* 脉冲光晕 */
+  /* Pulsing glow */
   .sakura-pulse {
     position: absolute;
     top: 50%;
@@ -98,7 +98,7 @@ import { siteConfig } from '../config';
     background: radial-gradient(circle, rgba(255, 183, 197, 0.18) 0%, transparent 70%);
   }
 
-  /* ── 进度条 ── */
+  /* ── Progress bar ── */
   .sakura-bar {
     width: 120px;
     height: 2px;
@@ -129,7 +129,7 @@ import { siteConfig } from '../config';
     100% { left: 100%; }
   }
 
-  /* ── 文字 ── */
+  /* ── Text ── */
   .sakura-title {
     margin-top: 18px;
     font-size: 15px;
@@ -148,7 +148,7 @@ import { siteConfig } from '../config';
     100% { opacity: 1; transform: translateY(0); }
   }
 
-  /* ── 淡出 ── */
+  /* ── Fade out ── */
   #loading-screen {
     transition: opacity 0.5s ease, transform 0.5s ease;
   }
@@ -165,7 +165,7 @@ import { siteConfig } from '../config';
   var el = document.getElementById('loading-screen');
   if (!el) return;
 
-  /* 仅首次访问展示 */
+  /* Show only on first visit */
   if (sessionStorage.getItem('sakura-loaded')) {
     el.style.display = 'none';
     return;
